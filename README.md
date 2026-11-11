@@ -18,7 +18,7 @@ id/                   Tujuh halaman yang sama dalam bahasa Indonesia
 admin/index.html      Login + panel admin untuk mengubah isi halaman
 assets/css/style.css  Gaya dasar, responsif, dan aturan cetak
 assets/img/           Foto kapal dan logo
-assets/js/            site-edit.js, admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js (Tambah/Ubah/Hapus)
+assets/js/            site-edit.js, admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js (Tambah/Ubah/Hapus), admin-editor.js (editor dua bahasa + fokus gambar), site-search.js (pencarian navbar)
 tools/                Skrip pembuat ulang admin-data.js (opsional, perlu Node)
 ```
 
@@ -103,6 +103,16 @@ hanya tampil jika tamu dan admin memakai browser yang sama (cocok untuk uji coba
    Setiap kiriman tamu akan diteruskan ke sana (email/Sheet) selain disimpan lokal.
 2. Atau pindahkan penyimpanan ke backend sungguhan (mis. Supabase/Firebase) dengan mengganti fungsi `list/add/update/remove` di `pas-data.js`.
 Daftar Berita dan Lowongan memakai data di `pas-data.js` (bukan HTML lagi), jadi ubah lewat admin, bukan lewat file HTML.
+
+
+## Editor halaman dua bahasa, fokus gambar, dan menu dropdown
+
+- **Dua bahasa sekaligus:** satu bidang menampilkan kolom ID dan EN berdampingan. Tombol **Simpan perubahan** menyimpan keduanya.
+  Terjemahan tidak otomatis (isi tiap bahasa tetap Anda tulis sendiri); yang otomatis sama untuk kedua bahasa adalah **gambar** dan pengaturan fokusnya.
+- **Dropdown bahasa tampilan** di sisi kiri atas: *Indonesia + Inggris* (bawaan), *Indonesia saja*, atau *Inggris saja*.
+- **Dropdown bagian:** setiap menu halaman punya panah ▾ berisi daftar judul bagian. Klik judulnya untuk langsung loncat ke bagian itu (misalnya Keberlanjutan, Bagaimana kami menjalankannya).
+- **Fokus gambar:** pada setiap gambar, klik atau geser di atas gambar untuk memilih bagian yang difokuskan. Kotak pratinjau di sebelahnya menunjukkan hasil potongan.
+  Berlaku juga untuk gambar di menu Berita dan Blok Halaman. Fokus hanya terlihat pada gambar yang ditampilkan dengan potongan (*cover*), bukan pada logo.
 
 ## Yang masih perlu dilengkapi
 

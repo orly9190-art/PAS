@@ -44,7 +44,7 @@
     box.querySelectorAll(':scope > article').forEach(function (a) { a.remove(); });
     items.forEach(function (it) {
       var a = tpl.cloneNode(true), im = a.querySelector('img'), sp = a.querySelectorAll('span');
-      if (im) { im.setAttribute('src', img(it.gambar)); im.setAttribute('alt', ''); }
+      if (im) { im.setAttribute('src', img(it.gambar)); im.setAttribute('alt', ''); if (it.gambar_f) im.style.objectPosition = it.gambar_f; }
       if (sp[0]) sp[0].textContent = it.kategori || ''; if (sp[1]) sp[1].textContent = it.tanggal || '';
       a.querySelector('h3').textContent = pick(it, 'judul'); a.querySelector('p').textContent = pick(it, 'isi');
       box.appendChild(a);
@@ -115,7 +115,7 @@
       if (b.halaman !== SLUG || (b.bahasa && b.bahasa !== 'semua' && b.bahasa !== LANG)) return;
       var s = el('section', 'background:#F3F7FA'), w = el('div', 'max-width:1200px;margin:0 auto;padding:56px 32px');
       if (b.judul) w.appendChild(el('h2', 'margin:0 0 14px;color:#0A2240;font-size:32px;line-height:1.2', b.judul));
-      if (b.gambar) { var im = el('img', 'max-width:100%;max-height:420px;display:block;margin:0 0 16px;border-radius:3px'); im.src = img(b.gambar); im.alt = b.judul || ''; w.appendChild(im); }
+      if (b.gambar) { var im = el('img', 'max-width:100%;max-height:420px;display:block;margin:0 0 16px;border-radius:3px'); im.src = img(b.gambar); im.alt = b.judul || ''; if (b.gambar_f) im.style.objectFit = 'cover', im.style.objectPosition = b.gambar_f; w.appendChild(im); }
       (b.isi || '').split(/\n\s*\n/).forEach(function (p) { if (p.trim()) w.appendChild(el('p', 'margin:0 0 12px;max-width:820px', p.trim())); });
       s.appendChild(w); ft.parentNode.insertBefore(s, ft);
     });

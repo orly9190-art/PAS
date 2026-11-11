@@ -135,6 +135,7 @@
 
     var items = [h('div', { class: 'grp-title', text: 'Menu' }),
       h('a', { class: 'item' + (activeKey === 'dashboard' ? ' on' : ''), href: '#dashboard' }, h('span', { text: 'Dashboard' }))];
+    if (window.PASAdminEdit) { items = [h('div', { class: 'grp-title', text: 'Menu' }), items[1]].concat(PASAdminEdit.sidebar(activeKey)); } else {
     items.push(h('div', { class: 'grp-title', text: 'Edit halaman (' + lastLang.toUpperCase() + ')' }));
     PAGES.forEach(function (p) {
       var n = countEdits(all[lastLang + '/' + p.slug]);
@@ -142,6 +143,7 @@
         h('span', { text: p.name }),
         h('span', { class: 'badge', id: 'bd-' + p.slug, text: String(n), hidden: n === 0 })));
     });
+    }
 
     if (window.PASAdminCrud) {
       var C = PASAdminCrud.cfg, grp = '';
@@ -526,14 +528,17 @@
     leaveGuard();
     if (!loggedIn()) return renderLogin();
     var hash = location.hash.replace(/^#/, '');
+    var mp = hash.match(/^p\/([a-z]+)(?:\/(\d+))?$/);
+    if (mp && pageOf(mp[1]) && window.PASAdminEdit) return PASAdminEdit.view(mp[1], mp[2]);
     var mt = hash.match(/^(en|id)\/([a-z]+)$/), mk = hash.match(/^k\/([a-z]+)$/);
     window.scrollTo(0, 0);
     if (mk && window.PASAdminCrud) { activeEditor = null; return PASAdminCrud.view(mk[1]); }
-    if (mt && pageOf(mt[2])) renderEditor(mt[1], mt[2]);
+    if (mt && pageOf(mt[2]) && window.PASAdminEdit) PASAdminEdit.view(mt[2]);
+    else if (mt && pageOf(mt[2])) renderEditor(mt[1], mt[2]);
     else renderDashboard();
   }
 
-  window.PASAdmin = { h: h, shell: shell, toast: toast, fileToDataURL: fileToDataURL };
+  window.PASAdmin = { h: h, shell: shell, toast: toast, fileToDataURL: fileToDataURL, M: M, PAGES: PAGES, TAGS: TAGS, pageOf: pageOf, countEdits: function (o) { return o ? countEdits(o) : 0; }, isEmpty: isEmpty, setEditor: function (e) { activeEditor = e; } };
   window.addEventListener('hashchange', route);
   window.addEventListener('beforeunload', function (e) {
     if (activeEditor && activeEditor.isDirty()) { e.preventDefault(); e.returnValue = ''; }

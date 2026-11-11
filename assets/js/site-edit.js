@@ -71,6 +71,7 @@
         if (!el || el.getAttribute('src') !== r.o) return;
         el.removeAttribute('srcset');
         el.setAttribute('src', r.v);
+        if (r.f) el.style.objectPosition = r.f;  // fokus gambar (mis. "40% 25%")
       });
     }
   }

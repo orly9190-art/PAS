@@ -40,11 +40,12 @@
       if (f[2] === 'area') { e = h('textarea', { rows: 4 }); e.value = v; }
       else if (f[2] === 'sel') { e = h('select', null, f[3].map(function (o) { return h('option', { value: o, text: o, selected: o === v }); })); }
       else if (f[2] === 'img') {
-        var pv = h('img', { class: 'pv', alt: '', src: v ? (/^(data:|https?:)/.test(v) ? v : '../' + v) : null, hidden: !v });
+        vals[k + '_f'] = it[k + '_f'] || '';
+        var fw = window.PASAdminEdit.focal(v, vals[k + '_f'], function (p) { vals[k + '_f'] = p; });
         e = h('input', { type: 'file', accept: 'image/*', onchange: function () {
-          if (!e.files[0]) return; A.fileToDataURL(e.files[0]).then(function (u) { vals[k] = u; pv.src = u; pv.hidden = false; }, function (er) { A.toast(er.message); });
+          if (!e.files[0]) return; A.fileToDataURL(e.files[0]).then(function (u) { vals[k] = u; fw.setSrc(u); }, function (er) { A.toast(er.message); });
         } });
-        box.appendChild(pv);
+        box.appendChild(e); e = fw.el;
       } else { e = h('input', { type: 'text' }); e.value = v; }
       if (f[2] !== 'img') e.addEventListener('input', function () { vals[k] = e.value; });
       if (f[2] === 'sel') e.addEventListener('change', function () { vals[k] = e.value; });
