@@ -13,7 +13,7 @@
       fields: [['kategori', 'Kategori'], ['tanggal', 'Tanggal'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area']] },
     lowongan: { group: 'Kelola Konten', title: 'Lowongan (Karir)', sub: 'Daftar lowongan di halaman Karir. Yang berstatus Nonaktif tidak tampil.', cols: ['judul_id', 'penempatan', 'jenis', 'tutup', 'status'],
       fields: [['judul_id', 'Posisi (ID)'], ['judul_en', 'Posisi (EN)'], ['penempatan', 'Penempatan'], ['jenis', 'Jenis kerja'], ['tutup', 'Tanggal tutup'], ['status', 'Status', 'sel', ['Aktif', 'Nonaktif']]] },
-    blok: { group: 'Kelola Konten', title: 'Blok Halaman', sub: 'Bagian tambahan (judul, teks, gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
+    blok: { group: 'Kelola Konten', title: 'Konten Halaman', sub: 'Konten tambahan (paragraf berformat dan gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
       fields: [['halaman', 'Halaman', 'sel', SLUGS.map(function (s) { return s[0]; })], ['bahasa', 'Bahasa', 'sel', ['semua', 'id', 'en']], ['judul', 'Judul'], ['isi', 'Isi (pisahkan paragraf dengan baris kosong)', 'area'], ['gambar', 'Gambar (opsional)', 'img']] }
   };
   var LBL = { dibuat: 'Masuk', halaman: 'Halaman', bahasa: 'Bahasa', judul: 'Judul' };
@@ -65,6 +65,7 @@
 
   function view(key) {
     var c = CFG[key]; if (!c) { location.hash = '#dashboard'; return; }
+    if (key === 'blok' && window.PASBlocks) return window.PASBlocks.view();   // pembangun konten dengan editor teks kaya
     var q = '', body = h('div');
     var search = h('input', { type: 'search', class: 'search', placeholder: 'Cari…', 'aria-label': 'Cari', oninput: function () { q = search.value.toLowerCase(); draw(); } });
     function draw() {

@@ -18,7 +18,7 @@ id/                   Tujuh halaman yang sama dalam bahasa Indonesia
 admin/index.html      Login + panel admin untuk mengubah isi halaman
 assets/css/style.css  Gaya dasar, responsif, dan aturan cetak
 assets/img/           Foto kapal dan logo
-assets/js/            site-edit.js, admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js (Tambah/Ubah/Hapus), admin-editor.js (editor dua bahasa + fokus gambar), site-search.js (pencarian navbar)
+assets/js/            site-edit.js, admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js (Tambah/Ubah/Hapus), admin-blocks.js (Konten Halaman + editor teks kaya), admin-editor.js (editor dua bahasa + fokus gambar + tambah/hapus poin), site-search.js (pencarian navbar)
 tools/                Skrip pembuat ulang admin-data.js (opsional, perlu Node)
 ```
 
@@ -93,7 +93,7 @@ Menu admin sekarang punya dua kelompok tambahan. Semuanya mendukung **+ Tambah, 
 **Kelola Konten**
 - **Berita (Media)** : kartu berita di halaman Media (judul/ringkasan EN dan ID, kategori, tanggal, gambar).
 - **Lowongan (Karir)** : daftar lowongan; status Nonaktif menyembunyikannya dari halaman publik.
-- **Blok Halaman** : bagian tambahan (judul, teks, gambar) untuk halaman mana pun (Tentang, Layanan, Keberlanjutan, Media, Karir, Kontak, Legal), tampil sebelum footer.
+- **Konten Halaman** : lihat bagian di bawah.
 - Teks bawaan halaman lain tetap diubah lewat menu halaman seperti sebelumnya.
 
 ### Batasan penting: tanpa server
@@ -113,6 +113,41 @@ Daftar Berita dan Lowongan memakai data di `pas-data.js` (bukan HTML lagi), jadi
 - **Dropdown bagian:** setiap menu halaman punya panah ▾ berisi daftar judul bagian. Klik judulnya untuk langsung loncat ke bagian itu (misalnya Keberlanjutan, Bagaimana kami menjalankannya).
 - **Fokus gambar:** pada setiap gambar, klik atau geser di atas gambar untuk memilih bagian yang difokuskan. Kotak pratinjau di sebelahnya menunjukkan hasil potongan.
   Berlaku juga untuk gambar di menu Berita dan Blok Halaman. Fokus hanya terlihat pada gambar yang ditampilkan dengan potongan (*cover*), bukan pada logo.
+
+
+## Konten Halaman (tambah konten, paragraf, gambar, editor teks)
+
+Menu **Kelola Konten → Konten Halaman** (sebelumnya "Blok Halaman") dipakai untuk menambah konten baru di halaman mana pun.
+
+- **+ Tambah Konten**: pilih halaman, bahasa tampil (Semua / ID / EN), judul konten, lalu isi konten.
+- Di dalam konten bisa menambah banyak **+ Paragraf** dan **+ Gambar**, dan mengubah urutannya dengan tombol ↑ ↓.
+- Setiap paragraf punya **editor teks**: jenis teks (Paragraf, **H1 sampai H6**, Kutipan), **tebal, miring, garis bawah, coret**, subskrip/superskrip,
+  daftar berpoin/bernomor, rata kiri/tengah/kanan/kiri-kanan, tautan (Ctrl+K), garis pemisah, hapus format, urungkan/ulangi.
+  Teks yang ditempel dari Word atau web otomatis dibersihkan.
+- Setiap gambar punya: unggah atau pilih gambar bawaan situs, teks alternatif, keterangan, ukuran (penuh/sedang/kecil), posisi, dan opsi dipotong dengan titik fokus.
+- Di daftar konten: filter per halaman, ubah urutan konten, **Sembunyikan/Tampilkan**, Ubah, Hapus, serta Ekspor/Impor JSON.
+- Konten tampil di bagian bawah halaman, sebelum footer. Data lama dari "Blok Halaman" otomatis terbaca dan bisa langsung diubah.
+- Keamanan: isi teks disaring (hanya tag aman seperti p, h1-h6, strong, em, ul/ol, a, blockquote) sebelum disimpan dan sebelum tampil,
+  jadi script atau atribut berbahaya dari hasil tempel atau impor JSON dibuang.
+- Seperti fitur admin lainnya, data tersimpan di localStorage browser admin (lihat "Batasan penting: tanpa server" di atas).
+
+## Tambah / hapus poin di Edit Halaman
+
+Di menu **Edit halaman** (Tentang Kami sampai Legal), bagian yang berisi poin-poin berulang kini punya kotak **Daftar poin** di paling atas bagian itu.
+Contoh: poin **Misi** di Tentang Kami, kartu angka, butir sertifikat dan dokumen kapal, kartu muatan, kartu QHSE, alasan bergabung, tahap rekrutmen,
+alamat kantor, foto galeri, baris tabel armada, paragraf, dan pasal-pasal Legal.
+
+- **Hapus**: tombol di sebelah setiap poin. Poin yang akan dihapus dicoret; klik **Batalkan hapus** untuk mengembalikannya sebelum disimpan.
+- **+ Tambah poin** (atau **+ Tambah baris** pada tabel): muncul kotak isian ID dan EN berdampingan. Bentuk poin baru meniru poin terakhir di daftar itu
+  (judul, teks, dan gambar jika ada). Poin yang semua kolomnya dikosongkan tidak ditampilkan.
+- **Nomor otomatis**: bila poin bernomor (1, 2, 3, 01, 02, atau "1. Judul" di Legal), nomor menyesuaikan sendiri setelah tambah atau hapus.
+- Poin baru disisipkan setelah poin contoh (mis. pasal baru di Legal muncul setelah pasal terakhir, sebelum catatan penutup).
+- Mengubah isi poin yang sudah ada tetap lewat kolom teks di bawah kotak Daftar poin.
+- Perubahan ikut **Simpan perubahan**, **Reset halaman**, **Ekspor/Impor JSON**, dan berlaku di kedua bahasa. Poin baru juga ikut pencarian navbar, poin yang dihapus tidak.
+- Berita dan Lowongan tidak termasuk (diatur lewat **Kelola Konten**). Poin baru di dalam poin baru (mis. butir tambahan di dalam kartu yang baru dibuat) belum bisa;
+  butir di dalam kartu yang sudah ada bisa ditambah atau dihapus.
+- Daftar yang dikenali dibuat otomatis oleh `tools/buat-manifest.js` (lihat catatan di atas). Jika Anda mengubah jumlah poin langsung di file HTML,
+  jalankan ulang skrip itu; perubahan admin lama untuk daftar yang jumlah poinnya sudah berbeda dilewati agar tidak salah tempat.
 
 ## Yang masih perlu dilengkapi
 

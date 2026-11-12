@@ -61,10 +61,12 @@
     else el.appendChild(typeof c === 'object' ? c : document.createTextNode(c));
   }
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
-  function isEmpty(o) { return !(o.t && Object.keys(o.t).length) && !(o.im && Object.keys(o.im).length) && !o.title; }
+  function isEmpty(o) { return !(o.t && Object.keys(o.t).length) && !(o.im && Object.keys(o.im).length) && !(o.ls && Object.keys(o.ls).length) && !o.title; }
   function countEdits(o) {
     if (!o) return 0;
-    return (o.t ? Object.keys(o.t).length : 0) + (o.im ? Object.keys(o.im).length : 0) + (o.title ? 1 : 0);
+    var n = (o.t ? Object.keys(o.t).length : 0) + (o.im ? Object.keys(o.im).length : 0) + (o.title ? 1 : 0);
+    if (o.ls) Object.keys(o.ls).forEach(function (k) { n += ((o.ls[k] || {}).d || []).length + ((o.ls[k] || {}).a || []).length; });
+    return n;
   }
   function pageOf(slug) { return PAGES.filter(function (p) { return p.slug === slug; })[0]; }
   function toast(msg) {

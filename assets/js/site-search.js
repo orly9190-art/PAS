@@ -15,9 +15,14 @@
     var out = [], M = window.PAS_MANIFEST || {}, ed = window.PASSite ? PASSite.load() : {};
     SLUGS.forEach(function (slug) {
       var key = LANG + '/' + slug, p = M[key]; if (!p) return;
-      var e = (ed[key] || {}).t || {};
+      var e = (ed[key] || {}).t || {}, ls = (ed[key] || {}).ls || {}, gone = {};
+      Object.keys(ls).forEach(function (k) {   // poin yang dihapus / ditambah lewat admin
+        var lm = p.lists && p.lists[+k], r = ls[k]; if (!lm || !r || lm.n !== r.n) return;
+        (r.d || []).forEach(function (i) { var it = lm.items[i]; if (it) it.t.forEach(function (x) { gone[x] = 1; }); });
+        (r.a || []).forEach(function (a) { var t = (a.t || []).filter(Boolean).join(' — '); if (t.length > 2) out.push({ slug: slug, sec: (p.groups[lm.g] || {}).label || '', text: t }); });
+      });
       p.texts.forEach(function (t) {
-        var g = p.groups[t[1]]; if (!g || g.kind === 'header' || g.kind === 'footer' || SKIP[slug] === t[1]) return;
+        var g = p.groups[t[1]]; if (!g || g.kind === 'header' || g.kind === 'footer' || SKIP[slug] === t[1] || gone[t[0]]) return;
         var txt = t[3], r = e[t[0]]; if (r && r.o === txt) txt = r.v;
         if (txt.length > 2) out.push({ slug: slug, sec: g.label, text: txt });
       });
