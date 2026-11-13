@@ -150,6 +150,7 @@
     if (window.PASAdminCrud) {
       var C = PASAdminCrud.cfg, grp = '';
       Object.keys(C).forEach(function (k) {
+        if (k === 'blok') return;
         if (C[k].group !== grp) { grp = C[k].group; items.push(h('div', { class: 'grp-title', text: grp })); }
         var n = (k === 'pesan' || k === 'lamaran') ? PASData.list(k).filter(function (x) { return x.status === 'Baru'; }).length : 0;
         items.push(h('a', { class: 'item' + (activeKey === 'k/' + k ? ' on' : ''), href: '#k/' + k }, h('span', { text: C[k].title }),
@@ -189,8 +190,8 @@
         h('td', null, h('strong', { text: p.name }), h('div', { style: 'font-size:13px;color:#56697E', text: p.file })),
         cnt(ne), cnt(ni),
         h('td', null, h('div', { class: 'actions' },
-          h('a', { class: 'btn btn-line btn-sm', href: '#en/' + p.slug, text: 'Edit EN' }),
-          h('a', { class: 'btn btn-line btn-sm', href: '#id/' + p.slug, text: 'Edit ID' }))));
+          h('a', { class: 'btn btn-gold btn-sm', href: '#p/' + p.slug, text: 'Edit halaman' }),
+          h('a', { class: 'btn btn-line btn-sm', href: '#s/' + p.slug, text: 'Atur bagian baru' }))));
     });
     var used = (localStorage.getItem(PASSite.KEY) || '').length;
     var pct = Math.min(100, Math.round(used / QUOTA_CHARS * 100));
@@ -198,7 +199,7 @@
     shell('dashboard', 'Dashboard', [
       h('p', { class: 'eyebrow', text: 'Panel Admin' }),
       h('h1', { class: 'pt', text: 'Dashboard' }),
-      h('p', { class: 'lead', text: 'Pilih halaman di menu kiri untuk mengubah teks dan gambarnya. Setiap halaman tersedia dalam bahasa Inggris (EN) dan Indonesia (ID).' }),
+      h('p', { class: 'lead', text: 'Mau ubah apa hari ini? Pilih halaman di tabel di bawah: ubah teks dan foto yang sudah ada, atau tambah bagian baru berisi paragraf, foto, dan video YouTube. Bahasa Indonesia dan Inggris diatur sekaligus.' }),
       h('div', { class: 'note' },
         h('strong', { text: 'Penting: ' }),
         'klik Simpan perubahan di setiap halaman untuk menyimpan. Perubahan hanya tersimpan di browser ini (localStorage), jadi pengunjung lain tidak melihatnya. Klik Ekspor JSON secara berkala; jika data browser terhapus, cukup Impor JSON untuk memulihkan semuanya.'),
@@ -530,6 +531,9 @@
     leaveGuard();
     if (!loggedIn()) return renderLogin();
     var hash = location.hash.replace(/^#/, '');
+    var ms = hash.match(/^s\/([a-z]+)$/);
+    if (ms && pageOf(ms[1]) && window.PASSections) { window.scrollTo(0, 0); return window.PASSections.view(ms[1]); }
+    if (hash === 'k/blok') { location.hash = '#s/index'; return; }
     var mp = hash.match(/^p\/([a-z]+)(?:\/(\d+))?$/);
     if (mp && pageOf(mp[1]) && window.PASAdminEdit) return PASAdminEdit.view(mp[1], mp[2]);
     var mt = hash.match(/^(en|id)\/([a-z]+)$/), mk = hash.match(/^k\/([a-z]+)$/);

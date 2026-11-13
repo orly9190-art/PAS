@@ -156,6 +156,22 @@ details.grp > summary .kind { font-size: 11.5px; letter-spacing: 1.6px; text-tra
   .row.img .thumb { width: 100%; height: 150px; }
   h1.pt { font-size: 26px; }
 }
+
+/* ---------- tampilan lebih ramah ---------- */
+.btn { border-radius: 8px; min-height: 42px; } .btn-sm { min-height: 34px; }
+.card, .stat, details.grp, .login-card, .bk-el, .bk-item, .bk-box, .note { border-radius: 12px; }
+.card, .stat, details.grp { box-shadow: 0 1px 2px rgba(10,34,64,.05); }
+.row input[type=text], .row textarea, .search, .bk-f input[type=text], .bk-f select, .login-card input { border-radius: 8px; }
+.eyebrow, .row .tag, details.grp > summary .kind, table.tb th, .bk-sec, .bi .lg { text-transform: none; letter-spacing: 0; }
+.eyebrow { font-size: 14px; } .row .tag { font-size: 14px; } .bk-sec { font-size: 15px; }
+details.grp > summary { min-height: 56px; } details.grp > summary:hover { background: #F7FAFC; }
+.ptabs { display: flex; gap: 4px; margin: 14px 0 0; border-bottom: 2px solid var(--line); overflow-x: auto; }
+.ptabs a { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; font-weight: 700; color: var(--mut); text-decoration: none; border-bottom: 3px solid transparent; margin-bottom: -2px; border-radius: 8px 8px 0 0; white-space: nowrap; }
+.ptabs a:hover { color: var(--navy); background: #fff; }
+.ptabs a.on { color: var(--navy); border-bottom-color: var(--gold); background: #fff; }
+.ptabs a b { background: var(--gold); color: #fff; border-radius: 10px; font-size: 12px; padding: 1px 8px; }
+.toast { border-radius: 10px; }
+@media (max-width: 900px) { .ehead .row2 { position: sticky; bottom: 0; z-index: 30; background: var(--bg); padding: 10px 0; } }
 </style>
 </head>
 <body>
@@ -167,5 +183,6 @@ details.grp > summary .kind { font-size: 11.5px; letter-spacing: 1.6px; text-tra
 <script src="../assets/js/admin-editor.js"></script>
 <script src="../assets/js/admin-blocks.js"></script>
 <script src="../assets/js/admin-crud.js"></script>
+<script src="../assets/js/admin-sections.js"></script>
 </body>
 </html>

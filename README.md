@@ -149,6 +149,15 @@ alamat kantor, foto galeri, baris tabel armada, paragraf, dan pasal-pasal Legal.
 - Daftar yang dikenali dibuat otomatis oleh `tools/buat-manifest.js` (lihat catatan di atas). Jika Anda mengubah jumlah poin langsung di file HTML,
   jalankan ulang skrip itu; perubahan admin lama untuk daftar yang jumlah poinnya sudah berbeda dilewati agar tidak salah tempat.
 
+## Bagian baru di Edit Halaman (paragraf, foto, video)
+
+Setiap halaman di menu **Edit halaman** punya dua tab: **Teks & foto halaman** (isi bawaan) dan **Bagian baru**.
+
+- **+ Tambah bagian** / **Hapus bagian**, serta tombol ↑ ↓ untuk mengurutkan. Bagian bisa disembunyikan atau dibatasi untuk bahasa tertentu.
+- Di dalam bagian: **+ Paragraf** (editor teks kaya), **+ Foto** (unggah atau pilih foto situs, dengan fokus potongan), **+ Video**. Tiap isi bisa dihapus dan diurutkan.
+- **Video**: tempel link YouTube (watch, youtu.be, shorts, embed), video langsung tampil otomatis. Alternatif: unggah file MP4/WebM kecil (maks. 2,5 MB karena disimpan di browser).
+- Tab **Bagian baru** memakai data yang sama dengan menu lama "Konten Halaman" (menu itu kini dialihkan ke sini).
+
 ## Yang masih perlu dilengkapi
 
 Teks di dalam kurung siku `[ ]` adalah tempat isian yang belum terisi:

@@ -254,11 +254,17 @@
       h('div', { class: 'ehead' },
         h('div', { class: 'row1' }, h('div', null, h('h1', { class: 'pt', text: page.name }), h('p', { class: 'meta', text: mode === 'both' ? 'Perubahan berlaku untuk Bahasa Indonesia dan Inggris sekaligus.' : 'Hanya menampilkan Bahasa ' + LN[mode] + '. Ubah pilihan di menu kiri untuk melihat keduanya.' })),
           h('div', { class: 'tools' }, h('a', { class: 'btn btn-line', href: '../id/' + page.file, target: '_blank', rel: 'noopener', text: 'Lihat ID ↗' }), h('a', { class: 'btn btn-line', href: '../' + page.file, target: '_blank', rel: 'noopener', text: 'Lihat EN ↗' }))),
-        h('div', { class: 'row2' }, search, statusEl, h('button', { type: 'button', class: 'btn btn-line', text: 'Reset halaman', onclick: reset }), saveBtn)),
+        window.PASAdminEdit.tabs(slug, 'p'), h('div', { class: 'row2' }, search, statusEl, h('button', { type: 'button', class: 'btn btn-line', text: 'Reset halaman', onclick: reset }), saveBtn)),
       list, empty));
     idle(); counts(); refreshGone();
     if (target != null && target !== '') setTimeout(function () { window.PASAdminEdit.jump(tgt); }, 30);
   }
-  window.PASAdminEdit = { view: view, sidebar: sidebar, focal: focal, jump: null };
+  function tabs(slug, on) {
+    var n = window.PASData ? PASData.list('blok').filter(function (b) { return b.halaman === slug; }).length : 0;
+    return h('div', { class: 'ptabs', role: 'navigation', 'aria-label': 'Jenis edit' },
+      h('a', { href: '#p/' + slug, class: on === 'p' ? 'on' : '', text: 'Teks & foto halaman' }),
+      h('a', { href: '#s/' + slug, class: on === 's' ? 'on' : '' }, 'Bagian baru', n ? h('b', { text: String(n) }) : null));
+  }
+  window.PASAdminEdit = { view: view, sidebar: sidebar, focal: focal, tabs: tabs, jump: null };
   reroute();
 })();

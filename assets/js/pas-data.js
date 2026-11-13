@@ -187,6 +187,9 @@
     return box.textContent.trim() === '' && !/<(hr|ul|ol)/.test(out) ? '' : out;
   }
   function safeImg(s) { s = (s || '').trim(); return /^(data:image\/(png|jpe?g|gif|webp);base64,|https?:\/\/|\/)/i.test(s) || /^[\w\-./ ]+\.(png|jpe?g|gif|webp|svg)$/i.test(s) ? s : ''; }
+  function ytId(u) { var m = /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/i.exec((u || '').trim()); return m ? m[1] : ''; }
+  function ytStart(u) { var m = /[?&#](?:t|start)=(\d+)/i.exec(u || ''); return m ? +m[1] : 0; }
+  function safeVideo(s) { s = (s || '').trim(); return /^data:video\/(mp4|webm|ogg);base64,/i.test(s) || /^https?:\/\/[^\s"'<>]+\.(mp4|webm|ogg)(\?[^\s"'<>]*)?$/i.test(s) ? s : ''; }
   function elemen(b) {
     if (Array.isArray(b.elemen)) return b.elemen;
     var out = [];                                                // data lama: satu gambar + teks biasa
@@ -194,7 +197,7 @@
     if (b.isi) out.push({ tipe: 'teks', html: String(b.isi).split(/\n\s*\n/).filter(function (p) { return p.trim(); }).map(function (p) { return '<p>' + esc(p.trim()) + '</p>'; }).join('') });
     return out;
   }
-  D.clean = clean; D.elemen = elemen; D.richCss = RICH_CSS; D.setList = function (c, l) { write(c, l); };
+  D.clean = clean; D.elemen = elemen; D.ytId = ytId; D.richCss = RICH_CSS; D.setList = function (c, l) { write(c, l); };
 
   function renderBlok() {
     var ft = document.querySelector('footer'); if (!ft) return;
@@ -218,6 +221,21 @@
           fg.appendChild(im);
           if (it.caption) fg.appendChild(el('figcaption', 'margin-top:8px;font-size:14px;color:#56697E;line-height:1.5', it.caption));
           w.appendChild(fg);
+        } else if (it.tipe === 'video') {
+          var yid = it.sumber === 'file' ? '' : ytId(it.url), vs = it.sumber === 'file' ? safeVideo(it.src) : '';
+          if (!yid && !vs) return;
+          var fv = el('figure', 'margin:0 0 22px;max-width:' + (WIDTH[it.ukuran] || '100%') + (it.posisi === 'tengah' ? ';margin-left:auto;margin-right:auto' : it.posisi === 'kanan' ? ';margin-left:auto' : ''));
+          var fr = el('div', 'position:relative;aspect-ratio:16/9;background:#0A2240;border-radius:3px;overflow:hidden');
+          if (yid) {
+            var ifr = el('iframe', 'position:absolute;inset:0;width:100%;height:100%;border:0'), st0 = ytStart(it.url);
+            ifr.src = 'https://www.youtube-nocookie.com/embed/' + yid + (st0 ? '?start=' + st0 : ''); ifr.title = it.caption || 'Video';
+            ifr.allow = 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen'; ifr.setAttribute('allowfullscreen', ''); ifr.loading = 'lazy'; fr.appendChild(ifr);
+          } else {
+            var vd = el('video', 'width:100%;height:100%;display:block;background:#000'); vd.controls = true; vd.preload = 'metadata'; vd.setAttribute('playsinline', ''); vd.src = vs; fr.appendChild(vd);
+          }
+          fv.appendChild(fr);
+          if (it.caption) fv.appendChild(el('figcaption', 'margin-top:8px;font-size:14px;color:#56697E;line-height:1.5', it.caption));
+          w.appendChild(fv);
         }
       });
       s.appendChild(w); ft.parentNode.insertBefore(s, ft);

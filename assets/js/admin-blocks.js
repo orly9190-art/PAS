@@ -369,5 +369,5 @@
     draw();
   }
 
-  window.PASBlocks = { view: view, rich: rich };
+  window.PASBlocks = { view: view, rich: rich, imageBody: imageBody, field: field, sel: sel, textInput: textInput, plain: plain };
 })();
