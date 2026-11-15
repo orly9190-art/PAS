@@ -15,14 +15,9 @@
     var out = [], M = window.PAS_MANIFEST || {}, ed = window.PASSite ? PASSite.load() : {};
     SLUGS.forEach(function (slug) {
       var key = LANG + '/' + slug, p = M[key]; if (!p) return;
-      var e = (ed[key] || {}).t || {}, ls = (ed[key] || {}).ls || {}, gone = {};
-      Object.keys(ls).forEach(function (k) {   // poin yang dihapus / ditambah lewat admin
-        var lm = p.lists && p.lists[+k], r = ls[k]; if (!lm || !r || lm.n !== r.n) return;
-        (r.d || []).forEach(function (i) { var it = lm.items[i]; if (it) it.t.forEach(function (x) { gone[x] = 1; }); });
-        (r.a || []).forEach(function (a) { var t = (a.t || []).filter(Boolean).join(' — '); if (t.length > 2) out.push({ slug: slug, sec: (p.groups[lm.g] || {}).label || '', text: t }); });
-      });
+      var e = (ed[key] || {}).t || {};
       p.texts.forEach(function (t) {
-        var g = p.groups[t[1]]; if (!g || g.kind === 'header' || g.kind === 'footer' || SKIP[slug] === t[1] || gone[t[0]]) return;
+        var g = p.groups[t[1]]; if (!g || g.kind === 'header' || g.kind === 'footer' || SKIP[slug] === t[1]) return;
         var txt = t[3], r = e[t[0]]; if (r && r.o === txt) txt = r.v;
         if (txt.length > 2) out.push({ slug: slug, sec: g.label, text: txt });
       });
@@ -45,7 +40,7 @@
     text.split(re).forEach(function (part, i) { parent.appendChild(i % 2 ? el('mark', 'background:#F6D99B;color:inherit;padding:0', part) : document.createTextNode(part)); });
   }
 
-  var wrap = el('div', 'position:relative'); wrap.setAttribute('data-noedit', '');
+  var wrap = el('div', 'position:relative'); wrap.setAttribute('data-noedit', ''); wrap.setAttribute('data-runtime', '');
   var inp = el('input', 'min-height:38px;width:190px;max-width:44vw;border:1px solid #A9BACB;border-radius:3px;padding:0 12px;font:inherit;font-size:14px;color:#1C2733;background:#fff');
   inp.type = 'search'; inp.placeholder = LANG === 'id' ? 'Cari…' : 'Search…'; inp.setAttribute('aria-label', inp.placeholder); inp.autocomplete = 'off';
   var box = el('div', 'display:none;position:absolute;right:0;top:44px;width:min(420px,92vw);max-height:70vh;overflow:auto;background:#fff;border:1px solid #BCCBDA;border-radius:3px;box-shadow:0 10px 30px rgba(10,34,64,.2);z-index:300');

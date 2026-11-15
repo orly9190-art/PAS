@@ -1,0 +1,7 @@
+# PT Prima Armada Samudra
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+# Ganti CONTOH-DOMAIN.co.id dengan domain perusahaan.
+Sitemap: https://CONTOH-DOMAIN.co.id/sitemap.xml

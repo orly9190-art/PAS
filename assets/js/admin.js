@@ -10,9 +10,10 @@
 (function () {
   'use strict';
 
-  // ====== GANTI DI SINI ======
-  var ADMIN_USER = 'admin';
-  var ADMIN_PASS = 'admin123';
+  // Kredensial diambil dari assets/js/pas-auth.js (ganti di sana).
+  // ======
+  var ADMIN_USER = (window.PAS_AUTH && window.PAS_AUTH.user) || 'admin';
+  var ADMIN_PASS = (window.PAS_AUTH && window.PAS_AUTH.pass) || 'admin123';
   // ===========================
 
   var SESSION = 'pas_admin_session';
@@ -61,12 +62,10 @@
     else el.appendChild(typeof c === 'object' ? c : document.createTextNode(c));
   }
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
-  function isEmpty(o) { return !(o.t && Object.keys(o.t).length) && !(o.im && Object.keys(o.im).length) && !(o.ls && Object.keys(o.ls).length) && !o.title; }
+  function isEmpty(o) { return !(o.t && Object.keys(o.t).length) && !(o.im && Object.keys(o.im).length) && !o.title && !(o.pos && Object.keys(o.pos).length) && !(o.sec && Object.keys(o.sec).length) && !(o.fg && Object.keys(o.fg).length); }
   function countEdits(o) {
     if (!o) return 0;
-    var n = (o.t ? Object.keys(o.t).length : 0) + (o.im ? Object.keys(o.im).length : 0) + (o.title ? 1 : 0);
-    if (o.ls) Object.keys(o.ls).forEach(function (k) { n += ((o.ls[k] || {}).d || []).length + ((o.ls[k] || {}).a || []).length; });
-    return n;
+    return (o.t ? Object.keys(o.t).length : 0) + (o.im ? Object.keys(o.im).length : 0) + (o.title ? 1 : 0) + (o.pos ? Object.keys(o.pos).length : 0) + (o.sec ? Object.keys(o.sec).length : 0) + (o.fg ? Object.keys(o.fg).length : 0);
   }
   function pageOf(slug) { return PAGES.filter(function (p) { return p.slug === slug; })[0]; }
   function toast(msg) {
@@ -137,7 +136,6 @@
 
     var items = [h('div', { class: 'grp-title', text: 'Menu' }),
       h('a', { class: 'item' + (activeKey === 'dashboard' ? ' on' : ''), href: '#dashboard' }, h('span', { text: 'Dashboard' }))];
-    if (window.PASAdminEdit) { items = [h('div', { class: 'grp-title', text: 'Menu' }), items[1]].concat(PASAdminEdit.sidebar(activeKey)); } else {
     items.push(h('div', { class: 'grp-title', text: 'Edit halaman (' + lastLang.toUpperCase() + ')' }));
     PAGES.forEach(function (p) {
       var n = countEdits(all[lastLang + '/' + p.slug]);
@@ -145,12 +143,10 @@
         h('span', { text: p.name }),
         h('span', { class: 'badge', id: 'bd-' + p.slug, text: String(n), hidden: n === 0 })));
     });
-    }
 
     if (window.PASAdminCrud) {
       var C = PASAdminCrud.cfg, grp = '';
       Object.keys(C).forEach(function (k) {
-        if (k === 'blok') return;
         if (C[k].group !== grp) { grp = C[k].group; items.push(h('div', { class: 'grp-title', text: grp })); }
         var n = (k === 'pesan' || k === 'lamaran') ? PASData.list(k).filter(function (x) { return x.status === 'Baru'; }).length : 0;
         items.push(h('a', { class: 'item' + (activeKey === 'k/' + k ? ' on' : ''), href: '#k/' + k }, h('span', { text: C[k].title }),
@@ -190,8 +186,8 @@
         h('td', null, h('strong', { text: p.name }), h('div', { style: 'font-size:13px;color:#56697E', text: p.file })),
         cnt(ne), cnt(ni),
         h('td', null, h('div', { class: 'actions' },
-          h('a', { class: 'btn btn-gold btn-sm', href: '#p/' + p.slug, text: 'Edit halaman' }),
-          h('a', { class: 'btn btn-line btn-sm', href: '#s/' + p.slug, text: 'Atur bagian baru' }))));
+          h('a', { class: 'btn btn-line btn-sm', href: '#en/' + p.slug, text: 'Edit EN' }),
+          h('a', { class: 'btn btn-line btn-sm', href: '#id/' + p.slug, text: 'Edit ID' }))));
     });
     var used = (localStorage.getItem(PASSite.KEY) || '').length;
     var pct = Math.min(100, Math.round(used / QUOTA_CHARS * 100));
@@ -199,7 +195,7 @@
     shell('dashboard', 'Dashboard', [
       h('p', { class: 'eyebrow', text: 'Panel Admin' }),
       h('h1', { class: 'pt', text: 'Dashboard' }),
-      h('p', { class: 'lead', text: 'Mau ubah apa hari ini? Pilih halaman di tabel di bawah: ubah teks dan foto yang sudah ada, atau tambah bagian baru berisi paragraf, foto, dan video YouTube. Bahasa Indonesia dan Inggris diatur sekaligus.' }),
+      h('p', { class: 'lead', text: 'Pilih halaman di menu kiri untuk mengubah teks dan gambarnya. Setiap halaman tersedia dalam bahasa Inggris (EN) dan Indonesia (ID).' }),
       h('div', { class: 'note' },
         h('strong', { text: 'Penting: ' }),
         'klik Simpan perubahan di setiap halaman untuk menyimpan. Perubahan hanya tersimpan di browser ini (localStorage), jadi pengunjung lain tidak melihatnya. Klik Ekspor JSON secara berkala; jika data browser terhapus, cukup Impor JSON untuk memulihkan semuanya.'),
@@ -227,8 +223,16 @@
       if (!activeEditor.save()) return; // gagal menyimpan: batalkan ekspor
     }
     var data = { app: 'pas-site-edits', version: 1, exported: new Date().toISOString(), data: PASSite.load() };
+    var namaFile = 'cadangan-website-pas-' + new Date().toISOString().slice(0, 10) + '.json';
+    var B = window.parent !== window && window.parent.__PASBUNDLE;
+    if (B) {
+      B.save(namaFile, JSON.stringify(data, null, 2)).then(function (ok) {
+        if (ok) toast('File JSON disimpan. Simpan di tempat aman.');
+      }, function () { toast('Penyimpanan dibatalkan atau tidak tersedia.'); });
+      return;
+    }
     var url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-    var a = h('a', { href: url, download: 'cadangan-website-pas-' + new Date().toISOString().slice(0, 10) + '.json' });
+    var a = h('a', { href: url, download: namaFile });
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     toast('File JSON diunduh. Simpan di tempat aman.');
@@ -531,20 +535,14 @@
     leaveGuard();
     if (!loggedIn()) return renderLogin();
     var hash = location.hash.replace(/^#/, '');
-    var ms = hash.match(/^s\/([a-z]+)$/);
-    if (ms && pageOf(ms[1]) && window.PASSections) { window.scrollTo(0, 0); return window.PASSections.view(ms[1]); }
-    if (hash === 'k/blok') { location.hash = '#s/index'; return; }
-    var mp = hash.match(/^p\/([a-z]+)(?:\/(\d+))?$/);
-    if (mp && pageOf(mp[1]) && window.PASAdminEdit) return PASAdminEdit.view(mp[1], mp[2]);
     var mt = hash.match(/^(en|id)\/([a-z]+)$/), mk = hash.match(/^k\/([a-z]+)$/);
     window.scrollTo(0, 0);
     if (mk && window.PASAdminCrud) { activeEditor = null; return PASAdminCrud.view(mk[1]); }
-    if (mt && pageOf(mt[2]) && window.PASAdminEdit) PASAdminEdit.view(mt[2]);
-    else if (mt && pageOf(mt[2])) renderEditor(mt[1], mt[2]);
+    if (mt && pageOf(mt[2])) renderEditor(mt[1], mt[2]);
     else renderDashboard();
   }
 
-  window.PASAdmin = { h: h, shell: shell, toast: toast, fileToDataURL: fileToDataURL, M: M, PAGES: PAGES, TAGS: TAGS, pageOf: pageOf, countEdits: function (o) { return o ? countEdits(o) : 0; }, isEmpty: isEmpty, setEditor: function (e) { activeEditor = e; } };
+  window.PASAdmin = { h: h, shell: shell, toast: toast, fileToDataURL: fileToDataURL };
   window.addEventListener('hashchange', route);
   window.addEventListener('beforeunload', function (e) {
     if (activeEditor && activeEditor.isDirty()) { e.preventDefault(); e.returnValue = ''; }

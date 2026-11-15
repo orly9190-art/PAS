@@ -18,8 +18,12 @@ id/                   Tujuh halaman yang sama dalam bahasa Indonesia
 admin/index.html      Login + panel admin untuk mengubah isi halaman
 assets/css/style.css  Gaya dasar, responsif, dan aturan cetak
 assets/img/           Foto kapal dan logo
-assets/js/            site-edit.js, admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js (Tambah/Ubah/Hapus), admin-blocks.js (Konten Halaman + editor teks kaya), admin-editor.js (editor dua bahasa + fokus gambar + tambah/hapus poin), site-search.js (pencarian navbar)
+assets/js/            live-editor.js (editor tampilan langsung, navigasi, font, simulasi), pas-auth.js (login), site-edit.js, site-search.js, site-ui.js (tombol WhatsApp & ke atas),
+                      admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js
 tools/                Skrip pembuat ulang admin-data.js (opsional, perlu Node)
+404.html              Halaman "tidak ditemukan" dua bahasa
+sitemap.xml           Daftar alamat halaman untuk mesin pencari
+robots.txt            Aturan perayapan; folder /admin/ dikecualikan
 ```
 
 Bahasa Inggris ada di akar folder, bahasa Indonesia di folder `id/`.
@@ -50,7 +54,7 @@ Jika ingin memakai domain sendiri, misalnya `primaarmadasamudra.co.id`:
 Tombol **Login** ada di pojok kanan atas setiap halaman dan membuka `admin/index.html`.
 
 - Nama pengguna dan kata sandi bawaan: `admin` / `admin123`.
-  Ganti di bagian atas `assets/js/admin.js` (`ADMIN_USER` dan `ADMIN_PASS`).
+  Ganti di `assets/js/pas-auth.js`.
 - Menu di sisi kiri berisi Dashboard dan satu menu untuk setiap halaman
   (Tentang Kami, Layanan, Keberlanjutan, Media, Karir, Kontak, Legal).
 - Setiap halaman bisa diedit dalam versi EN maupun ID. Semua teks, judul tab browser,
@@ -93,7 +97,7 @@ Menu admin sekarang punya dua kelompok tambahan. Semuanya mendukung **+ Tambah, 
 **Kelola Konten**
 - **Berita (Media)** : kartu berita di halaman Media (judul/ringkasan EN dan ID, kategori, tanggal, gambar).
 - **Lowongan (Karir)** : daftar lowongan; status Nonaktif menyembunyikannya dari halaman publik.
-- **Konten Halaman** : lihat bagian di bawah.
+- **Blok Halaman** : bagian tambahan (judul, teks, gambar) untuk halaman mana pun (Tentang, Layanan, Keberlanjutan, Media, Karir, Kontak, Legal), tampil sebelum footer.
 - Teks bawaan halaman lain tetap diubah lewat menu halaman seperti sebelumnya.
 
 ### Batasan penting: tanpa server
@@ -104,59 +108,92 @@ hanya tampil jika tamu dan admin memakai browser yang sama (cocok untuk uji coba
 2. Atau pindahkan penyimpanan ke backend sungguhan (mis. Supabase/Firebase) dengan mengganti fungsi `list/add/update/remove` di `pas-data.js`.
 Daftar Berita dan Lowongan memakai data di `pas-data.js` (bukan HTML lagi), jadi ubah lewat admin, bukan lewat file HTML.
 
+## Edit tampilan langsung di halaman pengunjung
 
-## Editor halaman dua bahasa, fokus gambar, dan menu dropdown
+Semua pengaturan tampilan dilakukan **langsung di halaman website**, bukan di panel admin.
 
-- **Dua bahasa sekaligus:** satu bidang menampilkan kolom ID dan EN berdampingan. Tombol **Simpan perubahan** menyimpan keduanya.
-  Terjemahan tidak otomatis (isi tiap bahasa tetap Anda tulis sendiri); yang otomatis sama untuk kedua bahasa adalah **gambar** dan pengaturan fokusnya.
-- **Dropdown bahasa tampilan** di sisi kiri atas: *Indonesia + Inggris* (bawaan), *Indonesia saja*, atau *Inggris saja*.
-- **Dropdown bagian:** setiap menu halaman punya panah ▾ berisi daftar judul bagian. Klik judulnya untuk langsung loncat ke bagian itu (misalnya Keberlanjutan, Bagaimana kami menjalankannya).
-- **Fokus gambar:** pada setiap gambar, klik atau geser di atas gambar untuk memilih bagian yang difokuskan. Kotak pratinjau di sebelahnya menunjukkan hasil potongan.
-  Berlaku juga untuk gambar di menu Berita dan Blok Halaman. Fokus hanya terlihat pada gambar yang ditampilkan dengan potongan (*cover*), bukan pada logo.
+### Cara membuka
+1. Buka halaman mana pun, lalu tekan **Ctrl + Shift + E** (atau tambahkan `#edit` di akhir alamat).
+2. Masuk dengan nama pengguna dan kata sandi (ada di `assets/js/pas-auth.js`, bawaan `admin` / `admin123`).
+3. Bilah **MODE EDIT** muncul di bawah dan panel **Pengaturan elemen** di kanan.
+   Setelah login, tombol **Edit tampilan** juga muncul di pojok kiri bawah (hanya di tab yang sama).
+   Pengunjung biasa tidak melihat apa pun.
 
+### Draf dan Simpan perubahan
+Semua perubahan hanya **draf** sampai Anda klik **Simpan perubahan** (atau Ctrl+S).
+Draf bisa **Urungkan / Ulangi** (Ctrl+Z / Ctrl+Y) atau **Buang draf**. Menutup tab dengan draf
+yang belum disimpan akan diperingatkan.
 
-## Konten Halaman (tambah konten, paragraf, gambar, editor teks)
+### Yang bisa diubah (klik elemennya, lalu atur di panel kanan)
+| Kebutuhan | Cara |
+|---|---|
+| Warna navbar sampai footer | Klik elemen mana pun (header, menu, tombol, kartu, bagian, footer). Atur **Latar**, **Tulisan**, **Garis tepi**: pilih warna bebas atau 16 warna cepat. Centang *Termasuk semua teks di dalamnya* agar teks anak ikut berubah. **↑ Induk** / **Bagian** untuk memilih kotak yang lebih besar. |
+| Zoom foto | Pilih foto, geser **Zoom** (100-400%). Seret fotonya untuk menggeser bagian yang tampil. |
+| Perbesar / perkecil foto | **Lebar gambar** dan **Tinggi gambar**. **Ganti gambar** untuk mengunggah foto baru. |
+| Perluas / persempit bagian | Pilih bagian: **Tinggi** (jarak atas-bawah) dan **Lebar isi**. |
+| Tambah konten | Pilih bagian atau footer, lalu **+ Judul, Paragraf, Poin-poin, Gambar, Video, Tombol, Kotak sorotan, Garis, Jarak kosong**. Konten tambahan bisa dinaik-turunkan, dihapus (atau tombol Delete), dan diberi warna/ukuran sendiri. |
+| Ubah teks | Klik dua kali teks lalu ketik, Enter untuk selesai, Esc membatalkan. Untuk tombol berikon, muncul kotak isian. |
 
-Menu **Kelola Konten → Konten Halaman** (sebelumnya "Blok Halaman") dipakai untuk menambah konten baru di halaman mana pun.
+Video: tempel tautan YouTube, Vimeo, atau MP4. Berkas MP4 yang diunggah langsung dibatasi 3 MB.
+Selama mode edit aktif, tautan dan tombol sengaja tidak berfungsi.
 
-- **+ Tambah Konten**: pilih halaman, bahasa tampil (Semua / ID / EN), judul konten, lalu isi konten.
-- Di dalam konten bisa menambah banyak **+ Paragraf** dan **+ Gambar**, dan mengubah urutannya dengan tombol ↑ ↓.
-- Setiap paragraf punya **editor teks**: jenis teks (Paragraf, **H1 sampai H6**, Kutipan), **tebal, miring, garis bawah, coret**, subskrip/superskrip,
-  daftar berpoin/bernomor, rata kiri/tengah/kanan/kiri-kanan, tautan (Ctrl+K), garis pemisah, hapus format, urungkan/ulangi.
-  Teks yang ditempel dari Word atau web otomatis dibersihkan.
-- Setiap gambar punya: unggah atau pilih gambar bawaan situs, teks alternatif, keterangan, ukuran (penuh/sedang/kecil), posisi, dan opsi dipotong dengan titik fokus.
-- Di daftar konten: filter per halaman, ubah urutan konten, **Sembunyikan/Tampilkan**, Ubah, Hapus, serta Ekspor/Impor JSON.
-- Konten tampil di bagian bawah halaman, sebelum footer. Data lama dari "Blok Halaman" otomatis terbaca dan bisa langsung diubah.
-- Keamanan: isi teks disaring (hanya tag aman seperti p, h1-h6, strong, em, ul/ol, a, blockquote) sebelum disimpan dan sebelum tampil,
-  jadi script atau atribut berbahaya dari hasil tempel atau impor JSON dibuang.
-- Seperti fitur admin lainnya, data tersimpan di localStorage browser admin (lihat "Batasan penting: tanpa server" di atas).
+### Agar pengunjung ikut melihat perubahan
+Perubahan tersimpan di browser Anda saja (localStorage). Untuk menayangkannya:
+1. Klik **Unduh halaman**. Berkas HTML yang sudah memuat perubahan terunduh.
+2. Unggah ke GitHub menggantikan berkas lama (halaman Indonesia ke folder `id/`).
+3. Setelah GitHub memperbarui (1-2 menit), semua pengunjung melihat versi baru.
 
-## Tambah / hapus poin di Edit Halaman
+### Batasan
+- Ruang penyimpanan browser sekitar 5 MB (10-15 foto). Jika penuh, unduh halaman, unggah ke GitHub,
+  lalu klik **Kembalikan ke asli**.
+- Elemen bawaan HTML tidak bisa dihapus lewat editor; hanya konten tambahan yang bisa dihapus.
+- Perubahan dikenali dari urutan elemen. Jika HTML diubah langsung setelah Anda menyimpan,
+  perubahan lama yang tidak cocok akan dilewati.
+- Login hanya penghalang tampilan (website statis tidak punya server). Ganti kata sandi di
+  `assets/js/pas-auth.js`.
 
-Di menu **Edit halaman** (Tentang Kami sampai Legal), bagian yang berisi poin-poin berulang kini punya kotak **Daftar poin** di paling atas bagian itu.
-Contoh: poin **Misi** di Tentang Kami, kartu angka, butir sertifikat dan dokumen kapal, kartu muatan, kartu QHSE, alasan bergabung, tahap rekrutmen,
-alamat kantor, foto galeri, baris tabel armada, paragraf, dan pasal-pasal Legal.
+### Jika berkas HTML diubah langsung
 
-- **Hapus**: tombol di sebelah setiap poin. Poin yang akan dihapus dicoret; klik **Batalkan hapus** untuk mengembalikannya sebelum disimpan.
-- **+ Tambah poin** (atau **+ Tambah baris** pada tabel): muncul kotak isian ID dan EN berdampingan. Bentuk poin baru meniru poin terakhir di daftar itu
-  (judul, teks, dan gambar jika ada). Poin yang semua kolomnya dikosongkan tidak ditampilkan.
-- **Nomor otomatis**: bila poin bernomor (1, 2, 3, 01, 02, atau "1. Judul" di Legal), nomor menyesuaikan sendiri setelah tambah atau hapus.
-- Poin baru disisipkan setelah poin contoh (mis. pasal baru di Legal muncul setelah pasal terakhir, sebelum catatan penutup).
-- Mengubah isi poin yang sudah ada tetap lewat kolom teks di bawah kotak Daftar poin.
-- Perubahan ikut **Simpan perubahan**, **Reset halaman**, **Ekspor/Impor JSON**, dan berlaku di kedua bahasa. Poin baru juga ikut pencarian navbar, poin yang dihapus tidak.
-- Berita dan Lowongan tidak termasuk (diatur lewat **Kelola Konten**). Poin baru di dalam poin baru (mis. butir tambahan di dalam kartu yang baru dibuat) belum bisa;
-  butir di dalam kartu yang sudah ada bisa ditambah atau dihapus.
-- Daftar yang dikenali dibuat otomatis oleh `tools/buat-manifest.js` (lihat catatan di atas). Jika Anda mengubah jumlah poin langsung di file HTML,
-  jalankan ulang skrip itu; perubahan admin lama untuk daftar yang jumlah poinnya sudah berbeda dilewati agar tidak salah tempat.
+Panel admin dan mode edit mengenali teks dari urutannya. Setelah Anda menambah atau menghapus
+teks langsung di berkas HTML, buat ulang manifest admin:
 
-## Bagian baru di Edit Halaman (paragraf, foto, video)
+```
+npm i jsdom
+node tools/buat-manifest-ringan.js
+```
 
-Setiap halaman di menu **Edit halaman** punya dua tab: **Teks & foto halaman** (isi bawaan) dan **Bagian baru**.
+Versi ringan ini tidak memerlukan Chromium dan hasilnya identik dengan `buat-manifest.js`.
 
-- **+ Tambah bagian** / **Hapus bagian**, serta tombol ↑ ↓ untuk mengurutkan. Bagian bisa disembunyikan atau dibatasi untuk bahasa tertentu.
-- Di dalam bagian: **+ Paragraf** (editor teks kaya), **+ Foto** (unggah atau pilih foto situs, dengan fokus potongan), **+ Video**. Tiap isi bisa dihapus dan diurutkan.
-- **Video**: tempel link YouTube (watch, youtu.be, shorts, embed), video langsung tampil otomatis. Alternatif: unggah file MP4/WebM kecil (maks. 2,5 MB karena disimpan di browser).
-- Tab **Bagian baru** memakai data yang sama dengan menu lama "Konten Halaman" (menu itu kini dialihkan ke sini).
+## Nomor WhatsApp dan tombol melayang
+
+Buka `assets/js/pas-data.js`, cari bagian paling atas:
+
+```js
+if (CFG.waNumber === undefined) CFG.waNumber = '';
+```
+
+Isi dengan nomor WhatsApp perusahaan dalam format internasional tanpa tanda plus,
+contoh `'628123456789'`. Tombol WhatsApp hijau akan muncul di pojok kanan bawah
+setiap halaman. Selama masih kosong, tombolnya sengaja tidak ditampilkan agar
+pengunjung tidak menekan tautan mati.
+
+Tombol bundar **kembali ke atas** muncul sendiri setelah halaman di-scroll,
+tidak perlu diatur.
+
+## Sebelum dipublikasikan ke domain
+
+Dua berkas memuat alamat contoh yang harus diganti:
+
+- `sitemap.xml` — ganti semua `CONTOH-DOMAIN.co.id` dengan domain perusahaan.
+- `robots.txt` — ganti alamat `Sitemap:` di baris terakhir.
+
+Setelah domain aktif, daftarkan `sitemap.xml` di Google Search Console agar
+halaman lebih cepat terindeks.
+
+Catatan: `404.html` dan `robots.txt` memakai alamat yang dimulai dari akar domain
+(`/assets/...`). Keduanya bekerja penuh jika website dipasang di domain sendiri.
+Pada alamat GitHub Pages berbentuk subfolder (`github.io/website-pas/`),
+halaman 404 tetap tampil tetapi logonya tidak muncul.
 
 ## Yang masih perlu dilengkapi
 
@@ -191,3 +228,47 @@ ikut berubah. Ukuran yang disarankan minimal 1600 piksel pada sisi terpanjang.
 Isi halaman `legal.html` adalah kerangka umum, bukan nasihat hukum.
 Mintalah bagian legal atau penasihat hukum perusahaan meninjaunya sebelum
 website dipublikasikan.
+
+## Daftar periksa sebelum tayang
+
+- [ ] Nomor telepon, WhatsApp, dan email diisi di seluruh halaman (EN dan ID)
+- [ ] `CFG.waNumber` di `pas-data.js` diisi
+- [ ] Berita di halaman Media diganti peristiwa yang benar-benar terjadi
+- [ ] Lowongan diisi atau dinonaktifkan lewat panel admin
+- [ ] Angka tarikan per tahun diganti angka laporan internal
+- [ ] Domain diganti di `sitemap.xml` dan `robots.txt`
+- [ ] Kata sandi admin diganti di `assets/js/admin.js`
+- [ ] Halaman `legal.html` ditinjau bagian legal perusahaan
+- [ ] Formulir kontak dihubungkan ke layanan pengiriman (lihat bagian di atas)
+- [ ] Logo pelanggan dipasang setelah izin tertulis diperoleh
+- [ ] Semua foto yang dipasang adalah milik perusahaan sendiri atau sudah berlisensi
+
+## Pembaruan editor tampilan langsung (v11)
+
+Semua ada di bilah **MODE EDIT** (baris kedua bernama ALAT) dan panel **Pengaturan elemen**.
+
+**Loncat ke bagian dan kembali**
+- Pilih bagian dari menu **⤓ Loncat ke bagian…** (atau dari daftar di panel saat belum ada yang dipilih). Halaman bergulir ke sana.
+- **↩ Kembali** (juga tombol biru melayang **Kembali ke posisi tadi**, atau tombol `[` di papan ketik) membawa Anda ke posisi dan pilihan sebelumnya. **↪ Maju** (atau `]`) mengulang. Riwayat menyimpan 30 loncatan.
+
+**Perubahan hanya di area yang ditunjuk pointer**
+- Arahkan pointer ke sebuah area: muncul garis putus-putus dan label **Area: …**. Diamkan 0,5 detik, area itu terpilih (tombol **Hover = pilih**; matikan jika ingin memilih lewat klik saja).
+- Semua pengaturan di panel (warna, font, ukuran, geser) hanya mengubah area terpilih. Teks di dalamnya ikut berubah hanya jika kotak "termasuk teks di dalamnya" dicentang.
+- **Fokus area** meredupkan semua yang di luar area terpilih. **🔒 Kunci pilihan** menahan pilihan agar pointer yang lewat tidak menggantinya.
+- **Pilih: Tepat / Seluruh bagian**: Tepat = elemen yang ditunjuk; Seluruh bagian = bagian halaman (section, menu, footer) yang ditunjuk.
+
+**Teks & font** (panel, untuk teks, tombol, judul, kartu, dan bagian)
+- Jenis huruf (Barlow, Arial, Verdana, Georgia, Times, Courier, serta Poppins, Roboto, Montserrat, Open Sans, Lato, Playfair Display, Merriweather dari Google Fonts), ukuran, ketebalan, miring, garis bawah, HURUF BESAR, rata teks, jarak baris, jarak huruf, dan **Reset teks & font**.
+- Font Google dimuat dari internet saat halaman dibuka. Ukuran huruf yang diatur berupa piksel tetap, jadi di ponsel ukurannya sama dengan di desktop; cek lewat Simulasi.
+
+**Naik / turun / kiri / kanan / induk**
+- Panel punya enam tombol pilihan: **← Sebelum**, **Sesudah →** (pendamping), **↑ Induk**, **↓ Anak**, **⌂ Bagian**, **✕ Lepas**. Papan ketik: **Shift + panah**.
+- **Geser posisi**: tombol ↑ ↓ ← → menggeser elemen terpilih (1 sampai 50 px per tekan, tahan untuk terus bergeser, ⟲ mengembalikan).
+- Konten tambahan: **↑ Naik / ↓ Turun / ⇈ Paling atas / ⇊ Paling bawah**, posisi **Kiri / Tengah / Kanan**, dan **Pindahkan ke bagian lain**.
+- Elemen bawaan HTML bisa digeser posisinya, tetapi urutannya tidak diubah (hanya konten tambahan yang bisa diurutkan).
+
+**Simulasi website** (tombol **▶ Simulasi website**)
+- Membuka halaman ini di jendela perangkat: Ponsel kecil 360, Ponsel 390, Tablet 768, Laptop 1280, Desktop 1440, atau ukuran bebas; **Putar**, skala pas layar / 50 / 75 / 100%.
+- **Tampilkan**: draf saat ini (termasuk yang belum disimpan), versi tersimpan, atau tanpa perubahan editor.
+- Tombol **ID / EN**, **◀ ▶**, **Muat ulang**, **Tampilan cetak** (menyembunyikan header, menu, footer). Tautan di dalamnya bisa diklik seperti pengunjung.
+- Formulir (penawaran, lamaran) di simulasi tampil berhasil tetapi **tidak menyimpan data** ke kotak masuk dan tidak dikirim ke `submitUrl`. Tutup dengan **Tutup simulasi** atau Esc.

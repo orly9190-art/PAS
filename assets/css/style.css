@@ -19,16 +19,59 @@ textarea:focus-visible, select:focus-visible {
 }
 table { border-collapse: collapse; }
 
-/* layar kecil */
+/* ============================================================
+   ZOOM SECTION (dari live-editor)
+   Supaya transform: scale() tidak merusak layout di sekitarnya
+   ============================================================ */
+section[style*="transform: scale"],
+footer[style*="transform: scale"],
+[data-sync] {
+  will-change: transform;
+}
+
+/* ============================================================
+   HEADER STICKY + NAVBAR
+   ============================================================ */
+[data-global="navbar"] {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+
+/* ============================================================
+   EDITOR: penanda elemen yang TIDAK boleh diedit
+   ============================================================ */
+[data-noedit] {
+  /* diabaikan oleh live-editor, tapi tidak mengubah tampilan */
+}
+
+/* ============================================================
+   LANGUAGE SWITCHER
+   ============================================================ */
+[data-noedit] a[aria-current="page"] {
+  font-weight: 700 !important;
+}
+
+/* ============================================================
+   LAYAR KECIL
+   ============================================================ */
 @media (max-width: 860px) {
   h1 { font-size: 32px !important; }
   h2 { font-size: 26px !important; }
   section > div { padding-left: 18px !important; padding-right: 18px !important; }
+  /* zoom section dimatikan di layar kecil agar tidak overflow */
+  section[style*="transform: scale"] { transform: none !important; margin-bottom: 0 !important; }
 }
 @media (max-width: 620px) {
   nav { gap: 14px !important; }
   nav a { font-size: 14px !important; }
 }
+
+/* ============================================================
+   PRINT
+   ============================================================ */
 @media print {
-  header, nav, footer { display: none !important; }
+  header, nav, footer, [data-global="navbar"] { display: none !important; }
+  body { background: #fff !important; }
+  section[style*="transform: scale"] { transform: none !important; margin-bottom: 0 !important; }
 }

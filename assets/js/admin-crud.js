@@ -13,7 +13,7 @@
       fields: [['kategori', 'Kategori'], ['tanggal', 'Tanggal'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area']] },
     lowongan: { group: 'Kelola Konten', title: 'Lowongan (Karir)', sub: 'Daftar lowongan di halaman Karir. Yang berstatus Nonaktif tidak tampil.', cols: ['judul_id', 'penempatan', 'jenis', 'tutup', 'status'],
       fields: [['judul_id', 'Posisi (ID)'], ['judul_en', 'Posisi (EN)'], ['penempatan', 'Penempatan'], ['jenis', 'Jenis kerja'], ['tutup', 'Tanggal tutup'], ['status', 'Status', 'sel', ['Aktif', 'Nonaktif']]] },
-    blok: { group: 'Kelola Konten', title: 'Konten Halaman', sub: 'Konten tambahan (paragraf berformat dan gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
+    blok: { group: 'Kelola Konten', title: 'Blok Halaman', sub: 'Bagian tambahan (judul, teks, gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
       fields: [['halaman', 'Halaman', 'sel', SLUGS.map(function (s) { return s[0]; })], ['bahasa', 'Bahasa', 'sel', ['semua', 'id', 'en']], ['judul', 'Judul'], ['isi', 'Isi (pisahkan paragraf dengan baris kosong)', 'area'], ['gambar', 'Gambar (opsional)', 'img']] }
   };
   var LBL = { dibuat: 'Masuk', halaman: 'Halaman', bahasa: 'Bahasa', judul: 'Judul' };
@@ -40,12 +40,11 @@
       if (f[2] === 'area') { e = h('textarea', { rows: 4 }); e.value = v; }
       else if (f[2] === 'sel') { e = h('select', null, f[3].map(function (o) { return h('option', { value: o, text: o, selected: o === v }); })); }
       else if (f[2] === 'img') {
-        vals[k + '_f'] = it[k + '_f'] || '';
-        var fw = window.PASAdminEdit.focal(v, vals[k + '_f'], function (p) { vals[k + '_f'] = p; });
+        var pv = h('img', { class: 'pv', alt: '', src: v ? (/^(data:|https?:)/.test(v) ? v : '../' + v) : null, hidden: !v });
         e = h('input', { type: 'file', accept: 'image/*', onchange: function () {
-          if (!e.files[0]) return; A.fileToDataURL(e.files[0]).then(function (u) { vals[k] = u; fw.setSrc(u); }, function (er) { A.toast(er.message); });
+          if (!e.files[0]) return; A.fileToDataURL(e.files[0]).then(function (u) { vals[k] = u; pv.src = u; pv.hidden = false; }, function (er) { A.toast(er.message); });
         } });
-        box.appendChild(e); e = fw.el;
+        box.appendChild(pv);
       } else { e = h('input', { type: 'text' }); e.value = v; }
       if (f[2] !== 'img') e.addEventListener('input', function () { vals[k] = e.value; });
       if (f[2] === 'sel') e.addEventListener('change', function () { vals[k] = e.value; });
@@ -65,7 +64,6 @@
 
   function view(key) {
     var c = CFG[key]; if (!c) { location.hash = '#dashboard'; return; }
-    if (key === 'blok' && window.PASBlocks) return window.PASBlocks.view();   // pembangun konten dengan editor teks kaya
     var q = '', body = h('div');
     var search = h('input', { type: 'search', class: 'search', placeholder: 'Cari…', 'aria-label': 'Cari', oninput: function () { q = search.value.toLowerCase(); draw(); } });
     function draw() {
