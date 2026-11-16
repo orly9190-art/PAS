@@ -26,7 +26,10 @@
   if (!PAGE) return;
 
   function loggedIn() {
-    try { return g.sessionStorage.getItem('pas_admin_session') === '1'; } catch (e) { return false; }
+    try {
+      if (g.sessionStorage.getItem('pas_admin_session') === '1') return true;
+      return (+g.localStorage.getItem('pas_admin_login') || 0) > Date.now();
+    } catch (e) { return false; }
   }
 
   var SAND = '#C9872F', DEEP = '#0A2240';

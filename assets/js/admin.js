@@ -82,7 +82,16 @@
   }
 
   /* ---------- login ---------- */
-  function loggedIn() { try { return sessionStorage.getItem(SESSION) === '1'; } catch (e) { return false; } }
+  // Login berlaku di semua tab browser ini selama 12 jam (bukan hanya tab tempat login).
+  var LOGIN_KEY = 'pas_admin_login', LAMA_LOGIN = 12 * 3600 * 1000;
+  function loggedIn() {
+    try {
+      if (sessionStorage.getItem(SESSION) === '1') return true;
+      var t = +localStorage.getItem(LOGIN_KEY) || 0;
+      if (t > Date.now()) { sessionStorage.setItem(SESSION, '1'); return true; }
+    } catch (e) { /* abaikan */ }
+    return false;
+  }
 
   function renderLogin() {
     clear(app);
@@ -93,7 +102,7 @@
       onsubmit: function (ev) {
         ev.preventDefault();
         if (user.value.trim() === ADMIN_USER && pass.value === ADMIN_PASS) {
-          try { sessionStorage.setItem(SESSION, '1'); } catch (e) { /* abaikan */ }
+          try { sessionStorage.setItem(SESSION, '1'); localStorage.setItem(LOGIN_KEY, String(Date.now() + LAMA_LOGIN)); } catch (e) { /* abaikan */ }
           route();
         } else {
           err.textContent = 'Nama pengguna atau kata sandi salah.';
@@ -122,7 +131,7 @@
 
   function logout() {
     leaveGuard();
-    try { sessionStorage.removeItem(SESSION); } catch (e) { /* abaikan */ }
+    try { sessionStorage.removeItem(SESSION); localStorage.removeItem(LOGIN_KEY); } catch (e) { /* abaikan */ }
     location.hash = '';
     route();
   }
@@ -208,6 +217,7 @@
         h('div', { style: 'overflow-x:auto' }, h('table', { class: 'tb' },
           h('thead', null, h('tr', null, h('th', { text: 'Halaman' }), h('th', { text: 'Teks EN' }), h('th', { text: 'Teks ID' }), h('th', { text: 'Foto & warna (EN + ID)' }), h('th', { text: '' }))),
           h('tbody', null, rows)))),
+      kartuUnduhWebsite(),
       kartuTerjemah(all),
       h('div', { class: 'card' }, h('h2', { text: 'Cadangan JSON & reset' }),
         h('div', { class: 'pad' },
@@ -262,6 +272,132 @@
         h('p', { style: 'margin:0 0 14px;color:#56697E', text: 'Foto, posisi foto, dan warna otomatis sama di EN dan ID. Teks tidak bisa diterjemahkan otomatis tanpa layanan terjemahan daring, jadi teks yang diubah di satu bahasa muncul di sini sampai pasangannya diubah juga.' }),
         isi,
         list.length ? h('div', { class: 'actions', style: 'margin-top:14px' }, h('button', { type: 'button', class: 'btn btn-gold', onclick: function () { unduhTerjemah(list); }, text: 'Unduh daftar (.txt)' })) : null));
+  }
+
+  /* ---------- unduh semua halaman beserta perubahan (zip) ---------- */
+  function muatHalaman(key) {
+    return new Promise(function (ok, gagal) {
+      var B = window.parent !== window && window.parent.__PASBUNDLE;
+      var f = document.createElement('iframe');
+      f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
+      f.style.cssText = 'position:fixed;left:-20000px;top:0;width:1280px;height:900px;border:0;visibility:hidden';
+      var selesai = false;
+      var batas = setTimeout(function () { if (!selesai) { selesai = true; f.remove(); gagal(new Error('waktu habis: ' + key)); } }, 20000);
+      f.onload = function () {
+        setTimeout(function () {
+          if (selesai) return;
+          selesai = true; clearTimeout(batas);
+          var doc;
+          try { doc = f.contentDocument; if (!doc || !doc.body) throw new Error('kosong'); } catch (e) { f.remove(); gagal(new Error('akses')); return; }
+          ok({ doc: doc, frame: f });
+        }, 700);
+      };
+      document.body.appendChild(f);
+      var lang = key.split('/')[0], slug = key.split('/')[1];
+      if (B) f.srcdoc = B.page(key);
+      else f.src = '../' + (lang === 'id' ? 'id/' : '') + slug + '.html';
+    });
+  }
+
+  function bersihkanSalinan(doc) {
+    var salin = doc.documentElement.cloneNode(true);
+    Array.prototype.forEach.call(salin.querySelectorAll('[data-pas-editor],[data-runtime]'), function (x) { x.remove(); });
+    Array.prototype.forEach.call(salin.querySelectorAll('span.pas-ed-t'), function (sp) { sp.parentNode.replaceChild(doc.createTextNode(sp.textContent), sp); });
+    ['data-orig-pos', 'data-orig-bg', 'data-orig-fg', 'data-orig-src'].forEach(function (a) {
+      Array.prototype.forEach.call(salin.querySelectorAll('[' + a + ']'), function (x) { x.removeAttribute(a); });
+    });
+    Array.prototype.forEach.call(salin.querySelectorAll('[data-ed-top]'), function (x) { x.style.top = x.getAttribute('data-ed-top') || ''; x.removeAttribute('data-ed-top'); });
+    salin.classList.remove('tl-js'); if (!salin.getAttribute('class')) salin.removeAttribute('class');
+    Array.prototype.forEach.call(salin.querySelectorAll('.tl-item'), function (x) { x.classList.remove('in'); x.hidden = false; });
+    return salin;
+  }
+
+  function ekstensiData(uri) {
+    var m = /^data:image\/(png|jpe?g|webp|gif)/i.exec(uri);
+    return m ? (m[1].toLowerCase() === 'jpeg' ? 'jpg' : m[1].toLowerCase()) : 'jpg';
+  }
+  function dataKeBiner(uri) {
+    var b64 = uri.split(',')[1] || '', bin = atob(b64), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function sidik(teks) { var h = 5381; for (var i = 0; i < teks.length; i += 7) h = ((h << 5) + h + teks.charCodeAt(i)) >>> 0; return h.toString(36) + teks.length.toString(36); }
+
+  function unduhWebsite(tombol, info) {
+    if (typeof JSZip === 'undefined') { info.textContent = 'Pustaka zip tidak termuat.'; return; }
+    var B = window.parent !== window && window.parent.__PASBUNDLE;
+    var zip = new JSZip(), stamp = String(Date.now()), fotoDipakai = {}, jumlahFoto = 0;
+    var kunci = [];
+    PAGES.forEach(function (p) { kunci.push('en/' + p.slug, 'id/' + p.slug); });
+    tombol.disabled = true;
+    var i = 0;
+    function berikut() {
+      if (i >= kunci.length) return selesai();
+      var key = kunci[i++];
+      info.textContent = 'Menyiapkan halaman ' + i + ' dari ' + kunci.length + ' (' + key + ') ...';
+      muatHalaman(key).then(function (r) {
+        var salin = bersihkanSalinan(r.doc);
+        if (B) B.restore(salin, key);
+        var awalan = key.indexOf('id/') === 0 ? '../' : '';
+        Array.prototype.forEach.call(salin.querySelectorAll('img[src^="data:"]'), function (im) {
+          var uri = im.getAttribute('src'), id = sidik(uri), nama = 'edit-' + id + '.' + ekstensiData(uri);
+          if (!fotoDipakai[nama]) { zip.file('assets/img/' + nama, dataKeBiner(uri)); fotoDipakai[nama] = 1; jumlahFoto++; }
+          im.setAttribute('src', awalan + 'assets/img/' + nama);
+          im.removeAttribute('data-bundle-img');
+        });
+        salin.setAttribute('data-pas-export', stamp);
+        var path = (key.indexOf('id/') === 0 ? 'id/' : '') + key.split('/')[1] + '.html';
+        zip.file(path, '<!doctype html>\n' + salin.outerHTML);
+        r.frame.remove();
+        berikut();
+      }, function (err) {
+        tombol.disabled = false;
+        info.textContent = err && err.message === 'akses'
+          ? 'Halaman tidak bisa dibaca dari sini. Buka panel admin dari website yang sudah dihosting (GitHub Pages) atau dari web Claude, bukan dari berkas di komputer.'
+          : 'Gagal menyiapkan ' + key + '. Coba lagi.';
+      });
+    }
+    function selesai() {
+      zip.file('BACA-DULU.txt', [
+        'Website PT Prima Armada Samudra - halaman beserta perubahan',
+        'Dibuat: ' + new Date().toLocaleString('id-ID'),
+        '',
+        'Isi: ' + kunci.length + ' halaman (EN + ID) dan ' + jumlahFoto + ' foto yang Anda ganti (assets/img/edit-*).',
+        '',
+        'Cara memakai:',
+        '1. Ekstrak zip ini.',
+        '2. Salin seluruh isinya ke folder website (situs-pas), timpa berkas yang lama.',
+        '3. Unggah ke GitHub seperti biasa.',
+        '4. Setelah diunggah, perubahan sudah tertanam di berkas, jadi terlihat oleh semua pengunjung.',
+        '',
+        'Catatan: berita, lowongan, dan isi panel admin lainnya disimpan terpisah; pakai Ekspor cadangan untuk menyimpannya.'
+      ].join('\r\n'));
+      info.textContent = 'Membuat zip ...';
+      zip.generateAsync({ type: 'blob', compression: 'DEFLATE' }).then(function (blob) {
+        var nama = 'website-pas-dengan-perubahan-' + new Date().toISOString().slice(0, 10) + '.zip';
+        var akhir = function (pesanOk) { tombol.disabled = false; info.textContent = pesanOk; };
+        if (B) {
+          B.save(nama, blob).then(function () { akhir('Zip tersimpan: ' + kunci.length + ' halaman, ' + jumlahFoto + ' foto pengganti.'); },
+            function (e) { akhir(e && e.code === 'declined' ? 'Penyimpanan dibatalkan.' : 'Unduhan tidak tersedia di tampilan ini.'); });
+        } else {
+          var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nama;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+          akhir('Zip diunduh: ' + kunci.length + ' halaman, ' + jumlahFoto + ' foto pengganti.');
+        }
+      });
+    }
+    berikut();
+  }
+
+  function kartuUnduhWebsite() {
+    var info = h('p', { style: 'margin:12px 0 0;color:#56697E', 'aria-live': 'polite' });
+    var tombol = h('button', { type: 'button', class: 'btn btn-gold', text: 'Unduh website + semua perubahan (.zip)' });
+    tombol.addEventListener('click', function () { unduhWebsite(tombol, info); });
+    return h('div', { class: 'card' }, h('h2', { text: 'Simpan perubahan ke berkas website' }),
+      h('div', { class: 'pad' },
+        h('p', { style: 'margin:0 0 14px;color:#56697E', text: 'Perubahan dari Mode Edit (teks, foto, posisi, warna, urutan bagian) tersimpan di browser ini saja. Tombol ini membuat zip berisi semua halaman EN dan ID dengan perubahan sudah tertanam, termasuk foto yang Anda ganti, untuk diunggah ke GitHub.' }),
+        tombol, info));
   }
 
   function exportBackup() {

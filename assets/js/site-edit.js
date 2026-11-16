@@ -29,6 +29,7 @@
 
   // Bisa melempar error (mis. penyimpanan penuh); pemanggil yang menangani.
   function save(all) {
+    all.__ts = Date.now(); // kapan perubahan terakhir dibuat
     global.localStorage.setItem(KEY, JSON.stringify(all));
   }
 
@@ -198,7 +199,11 @@
 
   function apply(pageKey) {
     if (global.PASSite) global.PASSite.idx = buildIndex(document);
-    var all = migrate(load(), pageKey, document);
+    var all = load();
+    // Halaman hasil "Unduh website + perubahan" sudah memuat perubahan sampai saat ekspor.
+    var exp = +(document.documentElement.getAttribute('data-pas-export') || 0);
+    if (exp && (+all.__ts || 0) <= exp) return;
+    all = migrate(all, pageKey, document);
     var own = all[pageKey] || {}, sh = all[vkey(pageKey)] || {};
     var e = {};
     Object.keys(own).forEach(function (k) { e[k] = own[k]; });

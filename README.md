@@ -256,3 +256,21 @@ website dipublikasikan.
 - **Sejarah** (halaman Tentang Kami): garis waktu 2004, 2009, 2014, 2019, 2024, 2026. Angka `[x]` adalah tempat isian
   jumlah tug dan barge PAS dan LLJ; isi lewat Mode Edit (klik angkanya lalu ketik).
 - **Jumlah armada** (pita angka di Tentang Kami): 18 kapal tunda dan 25 tongkang, sesuai data master armada sendiri.
+
+
+## Menyimpan hasil Mode Edit ke berkas (penting)
+
+Semua perubahan dari Mode Edit (teks, foto, posisi, warna, urutan bagian) tersimpan **di browser** yang dipakai saja,
+bukan di berkas website. Agar ikut terunggah ke GitHub:
+
+1. Login admin, buka **Dashboard**.
+2. Klik **Unduh website + semua perubahan (.zip)**.
+3. Ekstrak zip itu, salin isinya ke folder `situs-pas` (timpa berkas lama), lalu unggah ke GitHub.
+
+Foto yang Anda ganti ikut tersimpan sebagai `assets/img/edit-*.jpg/png`. Tombol ini bekerja dari web Claude atau dari
+website yang sudah dihosting; tidak dari berkas yang dibuka langsung di komputer.
+
+## Login dan tombol Edit halaman
+
+Tombol **Edit halaman** (kiri bawah) hanya muncul setelah login admin (`admin/index.html`).
+Login berlaku di semua tab browser yang sama selama 12 jam.
