@@ -18,7 +18,7 @@ id/                   Tujuh halaman yang sama dalam bahasa Indonesia
 admin/index.html      Login + panel admin untuk mengubah isi halaman
 assets/css/style.css  Gaya dasar, responsif, dan aturan cetak
 assets/img/           Foto kapal dan logo
-assets/js/            live-editor.js (editor tampilan langsung, navigasi, font, simulasi), pas-auth.js (login), site-edit.js, site-search.js, site-ui.js (tombol WhatsApp & ke atas),
+assets/js/            site-edit.js, site-search.js, site-ui.js (tombol WhatsApp & ke atas),
                       admin.js, admin-data.js, pas-data.js (data tamu + konten), admin-crud.js
 tools/                Skrip pembuat ulang admin-data.js (opsional, perlu Node)
 404.html              Halaman "tidak ditemukan" dua bahasa
@@ -54,7 +54,7 @@ Jika ingin memakai domain sendiri, misalnya `primaarmadasamudra.co.id`:
 Tombol **Login** ada di pojok kanan atas setiap halaman dan membuka `admin/index.html`.
 
 - Nama pengguna dan kata sandi bawaan: `admin` / `admin123`.
-  Ganti di `assets/js/pas-auth.js`.
+  Ganti di bagian atas `assets/js/admin.js` (`ADMIN_USER` dan `ADMIN_PASS`).
 - Menu di sisi kiri berisi Dashboard dan satu menu untuk setiap halaman
   (Tentang Kami, Layanan, Keberlanjutan, Media, Karir, Kontak, Legal).
 - Setiap halaman bisa diedit dalam versi EN maupun ID. Semua teks, judul tab browser,
@@ -108,49 +108,53 @@ hanya tampil jika tamu dan admin memakai browser yang sama (cocok untuk uji coba
 2. Atau pindahkan penyimpanan ke backend sungguhan (mis. Supabase/Firebase) dengan mengganti fungsi `list/add/update/remove` di `pas-data.js`.
 Daftar Berita dan Lowongan memakai data di `pas-data.js` (bukan HTML lagi), jadi ubah lewat admin, bukan lewat file HTML.
 
-## Edit tampilan langsung di halaman pengunjung
+## Edit langsung di halaman website
 
-Semua pengaturan tampilan dilakukan **langsung di halaman website**, bukan di panel admin.
+Selain panel admin, setiap halaman kini bisa diedit langsung di tempat.
 
-### Cara membuka
-1. Buka halaman mana pun, lalu tekan **Ctrl + Shift + E** (atau tambahkan `#edit` di akhir alamat).
-2. Masuk dengan nama pengguna dan kata sandi (ada di `assets/js/pas-auth.js`, bawaan `admin` / `admin123`).
-3. Bilah **MODE EDIT** muncul di bawah dan panel **Pengaturan elemen** di kanan.
-   Setelah login, tombol **Edit tampilan** juga muncul di pojok kiri bawah (hanya di tab yang sama).
-   Pengunjung biasa tidak melihat apa pun.
+1. Buka `admin/index.html` lalu login.
+2. Buka halaman mana saja di tab yang sama. Tombol **Edit halaman** muncul di pojok kiri bawah.
+   Pengunjung biasa tidak melihat tombol ini.
+3. Klik tombol itu. Bilah **MODE EDIT** muncul di atas, dan semua alat edit tampil:
 
-### Draf dan Simpan perubahan
-Semua perubahan hanya **draf** sampai Anda klik **Simpan perubahan** (atau Ctrl+S).
-Draf bisa **Urungkan / Ulangi** (Ctrl+Z / Ctrl+Y) atau **Buang draf**. Menutup tab dengan draf
-yang belum disimpan akan diperingatkan.
-
-### Yang bisa diubah (klik elemennya, lalu atur di panel kanan)
-| Kebutuhan | Cara |
+| Yang diubah | Caranya |
 |---|---|
-| Warna navbar sampai footer | Klik elemen mana pun (header, menu, tombol, kartu, bagian, footer). Atur **Latar**, **Tulisan**, **Garis tepi**: pilih warna bebas atau 16 warna cepat. Centang *Termasuk semua teks di dalamnya* agar teks anak ikut berubah. **↑ Induk** / **Bagian** untuk memilih kotak yang lebih besar. |
-| Zoom foto | Pilih foto, geser **Zoom** (100-400%). Seret fotonya untuk menggeser bagian yang tampil. |
-| Perbesar / perkecil foto | **Lebar gambar** dan **Tinggi gambar**. **Ganti gambar** untuk mengunggah foto baru. |
-| Perluas / persempit bagian | Pilih bagian: **Tinggi** (jarak atas-bawah) dan **Lebar isi**. |
-| Tambah konten | Pilih bagian atau footer, lalu **+ Judul, Paragraf, Poin-poin, Gambar, Video, Tombol, Kotak sorotan, Garis, Jarak kosong**. Konten tambahan bisa dinaik-turunkan, dihapus (atau tombol Delete), dan diberi warna/ukuran sendiri. |
-| Ubah teks | Klik dua kali teks lalu ketik, Enter untuk selesai, Esc membatalkan. Untuk tombol berikon, muncul kotak isian. |
+| Teks | Klik teks bergaris putus-putus, ketik, tekan Enter. Esc membatalkan. |
+| Foto | Arahkan ke foto, klik **Ganti foto**, pilih berkas dari laptop. Foto otomatis diperkecil. |
+| Posisi foto | Klik **Posisi**. Geser slider Atas-Bawah / Kiri-Kanan, pilih cepat Atas / Tengah / Bawah, atau seret fotonya langsung. |
+| Warna latar | Klik ikon palet di pojok kanan atas tiap bagian, tab **Latar**. Pilih dari 32 warna dasar, atau **Warna asli**. |
+| Warna tulisan | Di panel yang sama, tab **Tulisan**. Pilih dari 32 warna, **Otomatis** (putih atau navy, mana yang paling terbaca), atau **Warna asli**. |
 
-Video: tempel tautan YouTube, Vimeo, atau MP4. Berkas MP4 yang diunggah langsung dibatasi 3 MB.
-Selama mode edit aktif, tautan dan tombol sengaja tidak berfungsi.
+Tombol **Asli** di atas foto mengembalikan foto aslinya. **Kembalikan ke asli** di bilah atas
+menghapus semua perubahan halaman itu.
+
+Saat warna latar membuat tulisan sulit dibaca, panel menampilkan peringatan dengan tombol
+**Sesuaikan tulisan otomatis**. Warna tulisan hanya mengubah teks yang langsung berada di atas
+latar bagian itu; teks di dalam kartu putih dan tombol sengaja tidak ikut berubah agar tetap terbaca.
+
+Selama mode edit aktif, tautan dan tombol di halaman sengaja tidak berfungsi supaya Anda tidak
+berpindah halaman saat mengklik teks. Klik **Selesai edit** untuk kembali normal.
 
 ### Agar pengunjung ikut melihat perubahan
-Perubahan tersimpan di browser Anda saja (localStorage). Untuk menayangkannya:
-1. Klik **Unduh halaman**. Berkas HTML yang sudah memuat perubahan terunduh.
-2. Unggah ke GitHub menggantikan berkas lama (halaman Indonesia ke folder `id/`).
-3. Setelah GitHub memperbarui (1-2 menit), semua pengunjung melihat versi baru.
+
+Perubahan tersimpan di browser Anda saja. Untuk menayangkannya:
+
+1. Klik **Unduh halaman** di bilah atas. Berkas HTML yang sudah memuat perubahan akan terunduh.
+2. Unggah berkas itu ke GitHub, menggantikan berkas lama dengan nama yang sama.
+   Halaman bahasa Indonesia ke folder `id/`, halaman bahasa Inggris ke folder utama.
+3. Setelah GitHub selesai memperbarui (satu sampai dua menit), semua pengunjung melihat versi baru.
+
+Foto yang diganti ikut tertanam di dalam berkas HTML, jadi ukurannya bertambah sekitar
+150-400 KB per foto.
 
 ### Batasan
-- Ruang penyimpanan browser sekitar 5 MB (10-15 foto). Jika penuh, unduh halaman, unggah ke GitHub,
-  lalu klik **Kembalikan ke asli**.
-- Elemen bawaan HTML tidak bisa dihapus lewat editor; hanya konten tambahan yang bisa dihapus.
-- Perubahan dikenali dari urutan elemen. Jika HTML diubah langsung setelah Anda menyimpan,
-  perubahan lama yang tidak cocok akan dilewati.
-- Login hanya penghalang tampilan (website statis tidak punya server). Ganti kata sandi di
-  `assets/js/pas-auth.js`.
+
+- Ruang penyimpanan browser sekitar 5 MB, cukup untuk kira-kira 10-15 foto pengganti.
+  Jika penuh, unduh halaman, unggah ke GitHub, lalu klik **Kembalikan ke asli** untuk mengosongkan ruang.
+- Teks tidak boleh dikosongkan. Menghapus seluruh bagian perlu diubah langsung di berkas HTML.
+- Kartu berita dan daftar lowongan diatur lewat panel admin (Kelola Konten), bukan lewat mode edit.
+- Foto di menu atas (logo) tidak diberi tombol karena ikut bergerak saat halaman di-scroll.
+  Ganti logo lewat panel admin.
 
 ### Jika berkas HTML diubah langsung
 
@@ -243,32 +247,12 @@ website dipublikasikan.
 - [ ] Logo pelanggan dipasang setelah izin tertulis diperoleh
 - [ ] Semua foto yang dipasang adalah milik perusahaan sendiri atau sudah berlisensi
 
-## Pembaruan editor tampilan langsung (v11)
 
-Semua ada di bilah **MODE EDIT** (baris kedua bernama ALAT) dan panel **Pengaturan elemen**.
+## Peta wilayah operasi, sejarah, dan jumlah armada
 
-**Loncat ke bagian dan kembali**
-- Pilih bagian dari menu **⤓ Loncat ke bagian…** (atau dari daftar di panel saat belum ada yang dipilih). Halaman bergulir ke sana.
-- **↩ Kembali** (juga tombol biru melayang **Kembali ke posisi tadi**, atau tombol `[` di papan ketik) membawa Anda ke posisi dan pilihan sebelumnya. **↪ Maju** (atau `]`) mengulang. Riwayat menyimpan 30 loncatan.
-
-**Perubahan hanya di area yang ditunjuk pointer**
-- Arahkan pointer ke sebuah area: muncul garis putus-putus dan label **Area: …**. Diamkan 0,5 detik, area itu terpilih (tombol **Hover = pilih**; matikan jika ingin memilih lewat klik saja).
-- Semua pengaturan di panel (warna, font, ukuran, geser) hanya mengubah area terpilih. Teks di dalamnya ikut berubah hanya jika kotak "termasuk teks di dalamnya" dicentang.
-- **Fokus area** meredupkan semua yang di luar area terpilih. **🔒 Kunci pilihan** menahan pilihan agar pointer yang lewat tidak menggantinya.
-- **Pilih: Tepat / Seluruh bagian**: Tepat = elemen yang ditunjuk; Seluruh bagian = bagian halaman (section, menu, footer) yang ditunjuk.
-
-**Teks & font** (panel, untuk teks, tombol, judul, kartu, dan bagian)
-- Jenis huruf (Barlow, Arial, Verdana, Georgia, Times, Courier, serta Poppins, Roboto, Montserrat, Open Sans, Lato, Playfair Display, Merriweather dari Google Fonts), ukuran, ketebalan, miring, garis bawah, HURUF BESAR, rata teks, jarak baris, jarak huruf, dan **Reset teks & font**.
-- Font Google dimuat dari internet saat halaman dibuka. Ukuran huruf yang diatur berupa piksel tetap, jadi di ponsel ukurannya sama dengan di desktop; cek lewat Simulasi.
-
-**Naik / turun / kiri / kanan / induk**
-- Panel punya enam tombol pilihan: **← Sebelum**, **Sesudah →** (pendamping), **↑ Induk**, **↓ Anak**, **⌂ Bagian**, **✕ Lepas**. Papan ketik: **Shift + panah**.
-- **Geser posisi**: tombol ↑ ↓ ← → menggeser elemen terpilih (1 sampai 50 px per tekan, tahan untuk terus bergeser, ⟲ mengembalikan).
-- Konten tambahan: **↑ Naik / ↓ Turun / ⇈ Paling atas / ⇊ Paling bawah**, posisi **Kiri / Tengah / Kanan**, dan **Pindahkan ke bagian lain**.
-- Elemen bawaan HTML bisa digeser posisinya, tetapi urutannya tidak diubah (hanya konten tambahan yang bisa diurutkan).
-
-**Simulasi website** (tombol **▶ Simulasi website**)
-- Membuka halaman ini di jendela perangkat: Ponsel kecil 360, Ponsel 390, Tablet 768, Laptop 1280, Desktop 1440, atau ukuran bebas; **Putar**, skala pas layar / 50 / 75 / 100%.
-- **Tampilkan**: draf saat ini (termasuk yang belum disimpan), versi tersimpan, atau tanpa perubahan editor.
-- Tombol **ID / EN**, **◀ ▶**, **Muat ulang**, **Tampilan cetak** (menyembunyikan header, menu, footer). Tautan di dalamnya bisa diklik seperti pengunjung.
-- Formulir (penawaran, lamaran) di simulasi tampil berhasil tetapi **tidak menyimpan data** ke kotak masuk dan tidak dikirim ke `submitUrl`. Tutup dengan **Tutup simulasi** atau Esc.
+- **Peta** (halaman Layanan): tiga foto peta, yaitu Peta 1 lokasi kantor, Peta 2 rute Samarinda, Peta 3 rute Banjarmasin.
+  Berkasnya `assets/img/peta-indonesia-en|id.jpg`, `peta-rute-samarinda-en|id.jpg`, `peta-rute-banjarmasin-en|id.jpg` (versi EN dan ID berbeda).
+  Ganti lewat Mode Edit: klik **Ganti foto** di atas peta, pilih gambar dari laptop. Foto peta tampil utuh (tidak dipotong).
+- **Sejarah** (halaman Tentang Kami): garis waktu 2004, 2009, 2014, 2019, 2024, 2026. Angka `[x]` adalah tempat isian
+  jumlah tug dan barge PAS dan LLJ; isi lewat Mode Edit (klik angkanya lalu ketik).
+- **Jumlah armada** (pita angka di Tentang Kami): 18 kapal tunda dan 25 tongkang, sesuai data master armada sendiri.

@@ -31,6 +31,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://CONTOH-DOMAIN.co.id/organisasi.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://CONTOH-DOMAIN.co.id/organisasi.html"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://CONTOH-DOMAIN.co.id/id/organisasi.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://CONTOH-DOMAIN.co.id/id/organisasi.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://CONTOH-DOMAIN.co.id/organisasi.html"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://CONTOH-DOMAIN.co.id/id/organisasi.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://CONTOH-DOMAIN.co.id/keberlanjutan.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://CONTOH-DOMAIN.co.id/keberlanjutan.html"/>
     <xhtml:link rel="alternate" hreflang="id" href="https://CONTOH-DOMAIN.co.id/id/keberlanjutan.html"/>

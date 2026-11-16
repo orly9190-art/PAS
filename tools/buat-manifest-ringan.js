@@ -10,7 +10,7 @@ const { JSDOM } = require('jsdom');
 const fs = require('fs'), path = require('path');
 const root = process.argv[2] || process.cwd();
 const SITE_EDIT = fs.readFileSync(path.join(root, 'assets/js/site-edit.js'), 'utf8');
-const slugs = ['index','layanan','keberlanjutan','media','karir','kontak','legal'];
+const slugs = ['index','organisasi','layanan','keberlanjutan','media','karir','kontak','legal'];
 const out = {};
 for (const lang of ['en','id']) for (const slug of slugs) {
   const file = (lang==='id'?'id/':'') + slug + '.html';

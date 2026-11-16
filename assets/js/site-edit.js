@@ -12,6 +12,10 @@
  * supaya tidak salah menimpa teks lain.
  *
  * Elemen dengan atribut data-noedit (mis. tombol Login) tidak ikut dihitung.
+ *
+ * Foto, posisi foto, warna latar, dan warna tulisan disimpan BERSAMA untuk versi
+ * EN dan ID (kunci "v/<halaman>"), karena susunan kedua versi sama. Teks tetap
+ * per bahasa. Data lama per bahasa dipindahkan otomatis ke penyimpanan bersama.
  */
 (function (global) {
   'use strict';
@@ -118,13 +122,95 @@
     textNodes(doc).forEach(function (n, i) { t.set(n, i); });
     images(doc).forEach(function (el, i) { m.set(el, i); });
     sections(doc).forEach(function (el, i) { s.set(el, i); });
-    return { t: t, im: m, sec: s };
+    return { t: t, im: m, sec: s, geser: movable(doc) };
+  }
+
+  /* ---------- urutan bagian (naik/turun) ---------- */
+  // Bagian yang bisa dipindah: <section> tingkat atas yang berinduk sama.
+  function movable(doc) {
+    var all = sections(doc);
+    if (!all.length) return [];
+    var par = all[0].parentNode;
+    return all.filter(function (el) { return el.parentNode === par; });
+  }
+  function urutanSah(ord, n) {
+    if (!Array.isArray(ord) || ord.length !== n) return false;
+    var lihat = {};
+    for (var i = 0; i < n; i++) { if (typeof ord[i] !== 'number' || ord[i] < 0 || ord[i] >= n || lihat[ord[i]]) return false; lihat[ord[i]] = 1; }
+    return true;
+  }
+  // ord[k] = nomor asli bagian yang kini menempati slot ke-k
+  function reorder(ord) {
+    var L = global.PASSite && global.PASSite.idx && global.PASSite.idx.geser;
+    if (!L || !L.length) return;
+    if (!urutanSah(ord, L.length)) ord = L.map(function (x, i) { return i; });
+    var par = L[0].parentNode, doc = par.ownerDocument;
+    var tanda = L.map(function (el) { var c = doc.createComment('pas-slot'); par.insertBefore(c, el); return c; });
+    var urutDom = Array.prototype.filter.call(par.childNodes, function (n) { return tanda.indexOf(n) >= 0; });
+    urutDom.forEach(function (c, k) { par.replaceChild(L[ord[k]], c); });
+  }
+
+  /* ---------- penyimpanan bersama EN + ID ---------- */
+  var VIS = ['im', 'pos', 'sec', 'fg'];
+  function vkey(pageKey) { return 'v/' + String(pageKey).split('/')[1]; }
+  function pairKey(pageKey) { var p = String(pageKey).split('/'); return (p[0] === 'en' ? 'id/' : 'en/') + p[1]; }
+  function norm(s) {
+    s = String(s || '');
+    if (/^data:/.test(s)) return s;
+    return s.replace(/^(\.\.\/)+/, '').replace(/-(en|id)(\.[a-z0-9]+)$/i, '$2');
+  }
+  function origSrc(el) { return el.getAttribute('data-bundle-img') || el.getAttribute('src') || ''; }
+  function cocokSrc(el, o) {
+    return norm(origSrc(el)) === norm(o) || el.getAttribute('src') === o;
+  }
+
+  // Pindahkan foto/warna yang masih tersimpan per bahasa ke penyimpanan bersama.
+  function migrate(all, pageKey, doc) {
+    var vk = vkey(pageKey), ims = images(doc), ubah = false;
+    [pairKey(pageKey), pageKey].forEach(function (k) {
+      var e = all[k];
+      if (!e) return;
+      VIS.forEach(function (f) {
+        if (!e[f]) return;
+        var v = all[vk] || (all[vk] = {});
+        v[f] = v[f] || {};
+        var sisa = {};
+        Object.keys(e[f]).forEach(function (i) {
+          var val = e[f][i];
+          // foto bertanda data-ed-lang tetap tersimpan per bahasa
+          if ((f === 'im' || f === 'pos') && ims[+i] && ims[+i].hasAttribute('data-ed-lang')) { sisa[i] = val; return; }
+          if (f === 'im') {
+            var el = ims[+i];
+            if (!el || !val) return;
+            if (!(/^data:/.test(val.o) || norm(val.o) === norm(origSrc(el)))) return;
+            val = { o: norm(origSrc(el)), v: val.v };
+          }
+          v[f][i] = val;
+        });
+        if (Object.keys(sisa).length) { if (Object.keys(sisa).length !== Object.keys(e[f]).length) ubah = true; e[f] = sisa; }
+        else { delete e[f]; ubah = true; }
+      });
+      if (!Object.keys(e).length) delete all[k];
+    });
+    if (ubah) { try { save(all); } catch (err) { /* penyimpanan penuh: tetap terapkan */ } }
+    return all;
   }
 
   function apply(pageKey) {
     if (global.PASSite) global.PASSite.idx = buildIndex(document);
-    var e = load()[pageKey];
-    if (!e) return;
+    var all = migrate(load(), pageKey, document);
+    var own = all[pageKey] || {}, sh = all[vkey(pageKey)] || {};
+    var e = {};
+    Object.keys(own).forEach(function (k) { e[k] = own[k]; });
+    VIS.forEach(function (k) {
+      if (!sh[k]) return;
+      // foto bertanda data-ed-lang boleh berbeda per bahasa: milik bahasa ini didahulukan
+      var m = {};
+      Object.keys(sh[k]).forEach(function (i) { m[i] = sh[k][i]; });
+      if (own[k]) Object.keys(own[k]).forEach(function (i) { m[i] = own[k][i]; });
+      e[k] = m;
+    });
+    if (!Object.keys(e).length && !sh.ord) return;
 
     if (e.title && document.title === e.title.o) document.title = e.title.v;
 
@@ -142,7 +228,8 @@
       var im = images(document);
       Object.keys(e.im).forEach(function (i) {
         var r = e.im[i], el = im[+i];
-        if (!el || el.getAttribute('src') !== r.o) return;
+        if (!el || !cocokSrc(el, r.o)) return;
+        if (!el.hasAttribute('data-orig-src')) el.setAttribute('data-orig-src', el.getAttribute('src') || '');
         el.removeAttribute('srcset');
         el.setAttribute('src', r.v);
       });
@@ -175,9 +262,11 @@
         if (el) applyFg(el, e.fg[i]);
       });
     }
+
+    if (sh.ord) reorder(sh.ord);
   }
 
-  global.PASSite = { KEY: KEY, load: load, save: save, textNodes: textNodes, images: images, sections: sections, buildIndex: buildIndex, apply: apply, applyFg: applyFg, clearFg: clearFg };
+  global.PASSite = { KEY: KEY, load: load, save: save, vkey: vkey, pairKey: pairKey, norm: norm, origSrc: origSrc, textNodes: textNodes, images: images, sections: sections, buildIndex: buildIndex, apply: apply, reorder: reorder, applyFg: applyFg, clearFg: clearFg };
 
   // Penerapan otomatis di halaman publik: <script src="..." data-page="en/index">
   var s = document.currentScript;

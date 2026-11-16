@@ -5,7 +5,7 @@
   var st = document.querySelector('script[data-page]'); if (!st) return;
   var LANG = st.getAttribute('data-page').split('/')[0], ROOT = LANG === 'id' ? '../' : '';
   var nav = document.querySelector('header nav, nav'); if (!nav) return;
-  var SLUGS = ['index', 'layanan', 'keberlanjutan', 'media', 'karir', 'kontak', 'legal'], NAME = {};
+  var SLUGS = ['index', 'organisasi', 'layanan', 'keberlanjutan', 'media', 'karir', 'kontak', 'legal'], NAME = {};
   nav.querySelectorAll('a[href]').forEach(function (a) { var m = a.getAttribute('href').match(/^([a-z]+)\.html$/); if (m) NAME[m[1]] = a.textContent.trim(); });
   SLUGS.forEach(function (s) { NAME[s] = NAME[s] || s; });
   var SKIP = { media: 2, karir: 6 }; // grup yang diganti data dari admin (berita, lowongan)

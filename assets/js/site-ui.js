@@ -99,4 +99,33 @@
     g.addEventListener('scroll', cek, { passive: true });
     cek();
   });
+
+  /* ---------- 4. perbesar foto: <img data-zoom> ---------- */
+  siap(function () {
+    var lapis = null;
+    function tutup() { if (lapis) { lapis.remove(); lapis = null; d.removeEventListener('keydown', esc); } }
+    function esc(e) { if (e.key === 'Escape') tutup(); }
+    d.addEventListener('click', function (e) {
+      var im = e.target.closest && e.target.closest('img[data-zoom]');
+      if (!im) return;
+      // jangan ganggu Mode Edit
+      if (d.querySelector('.pas-chip')) return;
+      e.preventDefault();
+      lapis = d.createElement('div');
+      lapis.setAttribute('data-runtime', ''); lapis.setAttribute('data-noedit', '');
+      lapis.setAttribute('role', 'dialog'); lapis.setAttribute('aria-label', im.alt || '');
+      lapis.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:rgba(10,34,64,.88);display:flex;align-items:center;justify-content:center;padding:18px;cursor:zoom-out';
+      var besar = d.createElement('img');
+      besar.src = im.currentSrc || im.src; besar.alt = im.alt || '';
+      besar.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.45);background:#fff';
+      var x = d.createElement('button');
+      x.type = 'button'; x.textContent = '\u00d7'; x.setAttribute('aria-label', ID ? 'Tutup' : 'Close');
+      x.style.cssText = 'position:absolute;top:14px;right:16px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:' + DEEP + ';font:700 26px/1 Arial,sans-serif;cursor:pointer';
+      lapis.appendChild(besar); lapis.appendChild(x);
+      lapis.addEventListener('click', tutup);
+      d.body.appendChild(lapis);
+      d.addEventListener('keydown', esc);
+      x.focus();
+    });
+  });
 })(window, document);

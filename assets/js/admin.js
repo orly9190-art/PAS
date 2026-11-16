@@ -10,10 +10,9 @@
 (function () {
   'use strict';
 
-  // Kredensial diambil dari assets/js/pas-auth.js (ganti di sana).
-  // ======
-  var ADMIN_USER = (window.PAS_AUTH && window.PAS_AUTH.user) || 'admin';
-  var ADMIN_PASS = (window.PAS_AUTH && window.PAS_AUTH.pass) || 'admin123';
+  // ====== GANTI DI SINI ======
+  var ADMIN_USER = 'admin';
+  var ADMIN_PASS = 'admin123';
   // ===========================
 
   var SESSION = 'pas_admin_session';
@@ -21,6 +20,7 @@
 
   var PAGES = [
     { slug: 'index',         name: 'Tentang Kami',  file: 'index.html' },
+    { slug: 'organisasi',    name: 'Organisasi',    file: 'organisasi.html' },
     { slug: 'layanan',       name: 'Layanan',       file: 'layanan.html' },
     { slug: 'keberlanjutan', name: 'Keberlanjutan', file: 'keberlanjutan.html' },
     { slug: 'media',         name: 'Media',         file: 'media.html' },
@@ -179,12 +179,12 @@
     var all = PASSite.load();
     var total = 0;
     var rows = PAGES.map(function (p) {
-      var ne = countEdits(all['en/' + p.slug]), ni = countEdits(all['id/' + p.slug]);
-      total += ne + ni;
+      var ne = countEdits(all['en/' + p.slug]), ni = countEdits(all['id/' + p.slug]), nv = countEdits(all['v/' + p.slug]);
+      total += ne + ni + nv;
       function cnt(n) { return h('td', { class: 'n' + (n ? '' : ' zero'), text: n ? n + ' perubahan' : '—' }); }
       return h('tr', null,
         h('td', null, h('strong', { text: p.name }), h('div', { style: 'font-size:13px;color:#56697E', text: p.file })),
-        cnt(ne), cnt(ni),
+        cnt(ne), cnt(ni), cnt(nv),
         h('td', null, h('div', { class: 'actions' },
           h('a', { class: 'btn btn-line btn-sm', href: '#en/' + p.slug, text: 'Edit EN' }),
           h('a', { class: 'btn btn-line btn-sm', href: '#id/' + p.slug, text: 'Edit ID' }))));
@@ -201,13 +201,14 @@
         'klik Simpan perubahan di setiap halaman untuk menyimpan. Perubahan hanya tersimpan di browser ini (localStorage), jadi pengunjung lain tidak melihatnya. Klik Ekspor JSON secara berkala; jika data browser terhapus, cukup Impor JSON untuk memulihkan semuanya.'),
       h('div', { class: 'stats' },
         h('div', { class: 'stat' }, h('b', { text: String(total) }), h('span', { text: 'Total perubahan tersimpan' })),
-        h('div', { class: 'stat' }, h('b', { text: String(PAGES.length * 2) }), h('span', { text: 'Halaman bisa diedit (7 × EN/ID)' })),
+        h('div', { class: 'stat' }, h('b', { text: String(PAGES.length * 2) }), h('span', { text: 'Halaman bisa diedit (' + PAGES.length + ' × EN/ID)' })),
         h('div', { class: 'stat' }, h('b', { text: Math.round(used / 1024) + ' KB' }), h('span', { text: 'Penyimpanan terpakai (±5 MB)' }),
           h('div', { class: 'meter' }, h('i', { style: 'width:' + pct + '%' })))),
       h('div', { class: 'card' }, h('h2', { text: 'Halaman' }),
         h('div', { style: 'overflow-x:auto' }, h('table', { class: 'tb' },
-          h('thead', null, h('tr', null, h('th', { text: 'Halaman' }), h('th', { text: 'EN' }), h('th', { text: 'ID' }), h('th', { text: '' }))),
+          h('thead', null, h('tr', null, h('th', { text: 'Halaman' }), h('th', { text: 'Teks EN' }), h('th', { text: 'Teks ID' }), h('th', { text: 'Foto & warna (EN + ID)' }), h('th', { text: '' }))),
           h('tbody', null, rows)))),
+      kartuTerjemah(all),
       h('div', { class: 'card' }, h('h2', { text: 'Cadangan JSON & reset' }),
         h('div', { class: 'pad' },
           h('p', { style: 'margin:0 0 14px;color:#56697E', text: 'Ekspor JSON menyimpan semua perubahan (semua halaman, EN dan ID) ke satu file. Impor JSON memulihkannya dan menggantikan perubahan yang ada sekarang. Tombol yang sama ada di menu kiri bawah pada setiap halaman.' }),
@@ -216,6 +217,51 @@
             h('button', { type: 'button', class: 'btn btn-line', onclick: pickImport, text: 'Impor JSON' }),
             h('button', { type: 'button', class: 'btn btn-danger', onclick: resetAll, text: 'Hapus semua perubahan' }))))
     ]);
+  }
+
+  /* ---------- teks yang diubah di satu bahasa, belum di bahasa pasangannya ---------- */
+  function daftarTerjemah(all) {
+    var out = [];
+    PAGES.forEach(function (p) {
+      ['id', 'en'].forEach(function (lg) {
+        var e = all[lg + '/' + p.slug], lain = (lg === 'id' ? 'en' : 'id'), ep = all[lain + '/' + p.slug] || {};
+        if (!e || !e.t) return;
+        var mp = (M[lain + '/' + p.slug] || {}).texts || [];
+        Object.keys(e.t).forEach(function (i) {
+          if (ep.t && ep.t[i]) return;
+          var r = e.t[i], pasangan = mp[+i] ? mp[+i][3] : '';
+          out.push({ page: p.name, slug: p.slug, dari: lg.toUpperCase(), ke: lain.toUpperCase(), idx: +i, lama: r.o, baru: r.v, pasangan: pasangan });
+        });
+      });
+    });
+    return out;
+  }
+  function unduhTerjemah(list) {
+    var baris = list.map(function (x) {
+      return '[' + x.page + ' #' + x.idx + '] diubah di ' + x.dari + ', perlu diterjemahkan ke ' + x.ke +
+        '\n  ' + x.dari + ' lama : ' + x.lama + '\n  ' + x.dari + ' baru : ' + x.baru + '\n  ' + x.ke + ' sekarang: ' + x.pasangan + '\n';
+    }).join('\n');
+    var isi = 'Daftar teks yang perlu diterjemahkan - website PAS\n' + new Date().toISOString().slice(0, 10) + '\n\n' + baris;
+    var nama = 'perlu-diterjemahkan-' + new Date().toISOString().slice(0, 10) + '.txt';
+    if (window.parent && window.parent.__PASBUNDLE && window.parent !== window) { window.parent.__PASBUNDLE.save(nama, isi); return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([isi], { type: 'text/plain;charset=utf-8' }));
+    a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function kartuTerjemah(all) {
+    var list = daftarTerjemah(all);
+    var isi = list.length ? h('div', { style: 'overflow-x:auto' }, h('table', { class: 'tb' },
+      h('thead', null, h('tr', null, h('th', { text: 'Halaman' }), h('th', { text: 'Diubah di' }), h('th', { text: 'Teks baru' }), h('th', { text: 'Bahasa pasangan (masih lama)' }), h('th', { text: '' }))),
+      h('tbody', null, list.map(function (x) {
+        return h('tr', null, h('td', { text: x.page }), h('td', { text: x.dari + ' → ' + x.ke }), h('td', { text: x.baru }), h('td', { style: 'color:#56697E', text: x.pasangan }),
+          h('td', null, h('a', { class: 'btn btn-line btn-sm', href: '#' + x.ke.toLowerCase() + '/' + x.slug, text: 'Edit ' + x.ke })));
+      }))))
+      : h('p', { style: 'margin:0;color:#56697E', text: 'Semua teks yang diubah sudah punya pasangan di bahasa lainnya.' });
+    return h('div', { class: 'card' }, h('h2', { text: 'Teks yang perlu diterjemahkan (' + list.length + ')' }),
+      h('div', { class: 'pad' },
+        h('p', { style: 'margin:0 0 14px;color:#56697E', text: 'Foto, posisi foto, dan warna otomatis sama di EN dan ID. Teks tidak bisa diterjemahkan otomatis tanpa layanan terjemahan daring, jadi teks yang diubah di satu bahasa muncul di sini sampai pasangannya diubah juga.' }),
+        isi,
+        list.length ? h('div', { class: 'actions', style: 'margin-top:14px' }, h('button', { type: 'button', class: 'btn btn-gold', onclick: function () { unduhTerjemah(list); }, text: 'Unduh daftar (.txt)' })) : null));
   }
 
   function exportBackup() {

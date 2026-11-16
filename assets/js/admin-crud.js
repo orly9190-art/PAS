@@ -3,14 +3,14 @@
   'use strict';
   var A = window.PASAdmin, h = A.h, D = window.PASData;
   var ST = ['Baru', 'Dibaca', 'Selesai'];
-  var SLUGS = [['index', 'Tentang Kami'], ['layanan', 'Layanan'], ['keberlanjutan', 'Keberlanjutan'], ['media', 'Media'], ['karir', 'Karir'], ['kontak', 'Kontak'], ['legal', 'Legal']];
+  var SLUGS = [['index', 'Tentang Kami'], ['organisasi', 'Organisasi'], ['layanan', 'Layanan'], ['keberlanjutan', 'Keberlanjutan'], ['media', 'Media'], ['karir', 'Karir'], ['kontak', 'Kontak'], ['legal', 'Legal']];
   var CFG = {
     pesan: { group: 'Kotak Masuk', title: 'Permintaan Penawaran', sub: 'Masuk dari formulir di halaman Kontak.', cols: ['nama', 'perusahaan', 'muatan', 'status', 'dibuat'],
       fields: [['nama', 'Nama'], ['perusahaan', 'Perusahaan'], ['email', 'Email'], ['hp', 'HP / WhatsApp'], ['muat', 'Pelabuhan muat'], ['bongkar', 'Pelabuhan bongkar'], ['muatan', 'Jenis muatan'], ['volume', 'Volume (MT)'], ['tanggal', 'Tanggal muat'], ['pesan', 'Keterangan', 'area'], ['status', 'Status', 'sel', ST]] },
     lamaran: { group: 'Kotak Masuk', title: 'Lamaran Kerja', sub: 'Masuk dari tombol Lamar di halaman Karir.', cols: ['nama', 'posisi', 'email', 'status', 'dibuat'],
       fields: [['nama', 'Nama'], ['posisi', 'Posisi'], ['email', 'Email'], ['hp', 'HP / WhatsApp'], ['tautan_cv', 'Tautan CV'], ['pesan', 'Pesan', 'area'], ['status', 'Status', 'sel', ST]] },
     berita: { group: 'Kelola Konten', title: 'Berita (Media)', sub: 'Kartu berita di halaman Media.', cols: ['gambar', 'judul_id', 'kategori', 'tanggal'],
-      fields: [['kategori', 'Kategori'], ['tanggal', 'Tanggal'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area']] },
+      fields: [['kategori', 'Kategori (ID)'], ['kategori_en', 'Kategori (EN)'], ['tanggal', 'Tanggal (ID)'], ['tanggal_en', 'Tanggal (EN)'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area']] },
     lowongan: { group: 'Kelola Konten', title: 'Lowongan (Karir)', sub: 'Daftar lowongan di halaman Karir. Yang berstatus Nonaktif tidak tampil.', cols: ['judul_id', 'penempatan', 'jenis', 'tutup', 'status'],
       fields: [['judul_id', 'Posisi (ID)'], ['judul_en', 'Posisi (EN)'], ['penempatan', 'Penempatan'], ['jenis', 'Jenis kerja'], ['tutup', 'Tanggal tutup'], ['status', 'Status', 'sel', ['Aktif', 'Nonaktif']]] },
     blok: { group: 'Kelola Konten', title: 'Blok Halaman', sub: 'Bagian tambahan (judul, teks, gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
