@@ -114,4 +114,26 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://CONTOH-DOMAIN.co.id/tautan.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://CONTOH-DOMAIN.co.id/tautan.html"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://CONTOH-DOMAIN.co.id/id/tautan.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://CONTOH-DOMAIN.co.id/id/tautan.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://CONTOH-DOMAIN.co.id/tautan.html"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://CONTOH-DOMAIN.co.id/id/tautan.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/layanan.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/organisasi.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/keberlanjutan.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/media.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/karir.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/kontak.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/legal.html</loc></url>
+  <url><loc>https://CONTOH-DOMAIN.co.id/zh/tautan.html</loc></url>
 </urlset>

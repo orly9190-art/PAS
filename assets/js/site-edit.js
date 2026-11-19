@@ -151,6 +151,43 @@
     urutDom.forEach(function (c, k) { par.replaceChild(L[ord[k]], c); });
   }
 
+  /* ---------- posisi & perbesaran foto ----------
+   * Nilai tersimpan: "x% y%" atau "x% y% / z" (z = perbesaran, 1 = normal).
+   * Perbesaran memakai transform: scale lalu clip-path, sehingga foto tetap
+   * mengisi kotak aslinya dan hanya bagian yang dipilih yang terlihat. */
+  function bacaPos(v) {
+    var bag = String(v || '50% 50%').split('/');
+    var xy = bag[0].trim().split(/\s+/);
+    var x = parseFloat(xy[0]), y = parseFloat(xy[1]);
+    var z = parseFloat(bag[1]);
+    x = isNaN(x) ? 50 : x; y = isNaN(y) ? 50 : y; z = isNaN(z) || z < 1 ? 1 : Math.min(z, 4);
+    return { x: x, y: y, z: z, pos: bag[0].trim() || '50% 50%' };
+  }
+  function aturZoom(el, x, y, z) {
+    if (!el.hasAttribute('data-orig-zoom')) el.setAttribute('data-orig-zoom', JSON.stringify([el.style.transform || '', el.style.transformOrigin || '', el.style.clipPath || '']));
+    if (!z || z <= 1.001) {
+      var o = []; try { o = JSON.parse(el.getAttribute('data-orig-zoom') || '[]'); } catch (err) { o = []; }
+      el.style.transform = o[0] || ''; el.style.transformOrigin = o[1] || ''; el.style.clipPath = o[2] || '';
+      return;
+    }
+    var k = (1 - 1 / z) * 100;
+    el.style.transformOrigin = x + '% ' + y + '%';
+    el.style.transform = 'scale(' + z + ')';
+    el.style.clipPath = 'inset(' + (y / 100 * k).toFixed(3) + '% ' + ((100 - x) / 100 * k).toFixed(3) + '% ' + ((100 - y) / 100 * k).toFixed(3) + '% ' + (x / 100 * k).toFixed(3) + '%)';
+  }
+  // kotak foto sebelum diperbesar (untuk menaruh tombol editor di tempat yang benar)
+  function kotakFoto(el) {
+    var r = el.getBoundingClientRect();
+    var m = /scale\(([\d.]+)\)/.exec(el.style.transform || '');
+    var z = m ? parseFloat(m[1]) : 1;
+    if (!z || z <= 1.001) return r;
+    var o = (el.style.transformOrigin || '50% 50%').split(/\s+/);
+    var ox = parseFloat(o[0]) / 100, oy = parseFloat(o[1]) / 100;
+    var w = r.width / z, h = r.height / z;
+    var left = r.left + ox * (r.width - w), top = r.top + oy * (r.height - h);
+    return { left: left, top: top, width: w, height: h, right: left + w, bottom: top + h };
+  }
+
   /* ---------- penyimpanan bersama EN + ID ---------- */
   var VIS = ['im', 'pos', 'sec', 'fg'];
   function vkey(pageKey) { return 'v/' + String(pageKey).split('/')[1]; }
@@ -246,7 +283,9 @@
         var el = ip[+i];
         if (!el) return;
         if (!el.hasAttribute('data-orig-pos')) el.setAttribute('data-orig-pos', el.style.objectPosition || '');
-        el.style.objectPosition = e.pos[i];
+        var p = bacaPos(e.pos[i]);
+        el.style.objectPosition = p.pos;
+        aturZoom(el, p.x, p.y, p.z);
       });
     }
 
@@ -271,7 +310,7 @@
     if (sh.ord) reorder(sh.ord);
   }
 
-  global.PASSite = { KEY: KEY, load: load, save: save, vkey: vkey, pairKey: pairKey, norm: norm, origSrc: origSrc, textNodes: textNodes, images: images, sections: sections, buildIndex: buildIndex, apply: apply, reorder: reorder, applyFg: applyFg, clearFg: clearFg };
+  global.PASSite = { KEY: KEY, load: load, save: save, vkey: vkey, pairKey: pairKey, norm: norm, origSrc: origSrc, textNodes: textNodes, images: images, sections: sections, buildIndex: buildIndex, apply: apply, reorder: reorder, bacaPos: bacaPos, aturZoom: aturZoom, kotakFoto: kotakFoto, applyFg: applyFg, clearFg: clearFg };
 
   // Penerapan otomatis di halaman publik: <script src="..." data-page="en/index">
   var s = document.currentScript;

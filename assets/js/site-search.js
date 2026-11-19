@@ -3,9 +3,9 @@
 (function () {
   'use strict';
   var st = document.querySelector('script[data-page]'); if (!st) return;
-  var LANG = st.getAttribute('data-page').split('/')[0], ROOT = LANG === 'id' ? '../' : '';
+  var LANG = st.getAttribute('data-page').split('/')[0], ROOT = LANG === 'en' ? '' : '../';
   var nav = document.querySelector('header nav, nav'); if (!nav) return;
-  var SLUGS = ['index', 'organisasi', 'layanan', 'keberlanjutan', 'media', 'karir', 'kontak', 'legal'], NAME = {};
+  var SLUGS = ['index', 'organisasi', 'layanan', 'keberlanjutan', 'media', 'karir', 'kontak', 'legal', 'tautan'], NAME = {};
   nav.querySelectorAll('a[href]').forEach(function (a) { var m = a.getAttribute('href').match(/^([a-z]+)\.html$/); if (m) NAME[m[1]] = a.textContent.trim(); });
   SLUGS.forEach(function (s) { NAME[s] = NAME[s] || s; });
   var SKIP = { media: 2, karir: 6 }; // grup yang diganti data dari admin (berita, lowongan)
@@ -23,8 +23,8 @@
       });
     });
     if (window.PASData) {
-      PASData.list('berita').forEach(function (b) { var t = (b['judul_' + LANG] || '') + ' — ' + (b['isi_' + LANG] || ''); out.push({ slug: 'media', sec: b.kategori || '', text: t, hit: b['judul_' + LANG] }); });
-      PASData.list('lowongan').forEach(function (l) { if (l.status !== 'Nonaktif') out.push({ slug: 'karir', sec: l.penempatan || '', text: (l['judul_' + LANG] || '') + ' · ' + [l.penempatan, l.jenis].filter(Boolean).join(' · '), hit: l['judul_' + LANG] }); });
+      PASData.list('berita').forEach(function (b) { var t = (b['judul_' + LANG] || b.judul_en || b.judul_id || '') + ' — ' + (b['isi_' + LANG] || b.isi_en || b.isi_id || ''); out.push({ slug: 'media', sec: b.kategori || '', text: t, hit: b['judul_' + LANG] }); });
+      PASData.list('lowongan').forEach(function (l) { if (l.status !== 'Nonaktif') out.push({ slug: 'karir', sec: l.penempatan || '', text: (l['judul_' + LANG] || l.judul_en || l.judul_id || '') + ' · ' + [l.penempatan, l.jenis].filter(Boolean).join(' · '), hit: l['judul_' + LANG] }); });
       PASData.list('blok').forEach(function (b) { if (b.bahasa && b.bahasa !== 'semua' && b.bahasa !== LANG) return; out.push({ slug: b.halaman, sec: b.judul || '', text: (b.judul || '') + ' — ' + (b.isi || '').replace(/\s+/g, ' '), hit: b.judul }); });
     }
     return out;
@@ -42,7 +42,7 @@
 
   var wrap = el('div', 'position:relative'); wrap.setAttribute('data-noedit', ''); wrap.setAttribute('data-runtime', '');
   var inp = el('input', 'min-height:38px;width:190px;max-width:44vw;border:1px solid #A9BACB;border-radius:3px;padding:0 12px;font:inherit;font-size:14px;color:#1C2733;background:#fff');
-  inp.type = 'search'; inp.placeholder = LANG === 'id' ? 'Cari…' : 'Search…'; inp.setAttribute('aria-label', inp.placeholder); inp.autocomplete = 'off';
+  inp.type = 'search'; inp.placeholder = LANG === 'id' ? 'Cari…' : (LANG === 'zh' ? '搜索…' : 'Search…'); inp.setAttribute('aria-label', inp.placeholder); inp.autocomplete = 'off';
   var box = el('div', 'display:none;position:absolute;right:0;top:44px;width:min(420px,92vw);max-height:70vh;overflow:auto;background:#fff;border:1px solid #BCCBDA;border-radius:3px;box-shadow:0 10px 30px rgba(10,34,64,.2);z-index:300');
   box.setAttribute('role', 'listbox'); wrap.appendChild(inp); wrap.appendChild(box); nav.appendChild(wrap);
 

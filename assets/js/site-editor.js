@@ -294,7 +294,7 @@
     var all = S.load(), e = entryFoto(all, img);
     if (!(e.im && e.im[idx])) e = entryV(all);
     if (e.im && e.im[idx]) {
-      img.setAttribute('src', img.getAttribute('data-orig-src') || ((PAGE.indexOf('id/') === 0 ? '../' : '') + e.im[idx].o));
+      img.setAttribute('src', img.getAttribute('data-orig-src') || ((PAGE.indexOf('en/') === 0 ? '' : '../') + e.im[idx].o));
       delete e.im[idx];
       if (simpan(all)) pesan('Foto dikembalikan ke aslinya.');
     }
@@ -326,7 +326,7 @@
     'box-shadow:0 12px 40px rgba(10,34,64,.38);font:500 14px/1.5 Barlow,Arial,sans-serif');
   var seret = el('div', 'position:absolute;cursor:grab;background:rgba(201,135,47,.12);outline:2px dashed ' + SAND +
     ';display:none;touch-action:none');
-  var posImg = null, posAwal = '', posX = 50, posY = 50;
+  var posImg = null, posAwal = '', posAwalZoom = 1, posX = 50, posY = 50, posZ = 1;
 
   function slider(label) {
     var w = el('label', 'display:block;margin:10px 0 2px;font-weight:600;font-size:13.5px', label);
@@ -335,18 +335,22 @@
     w.appendChild(r);
     return { wrap: w, input: r };
   }
+  var sZ = slider('Perbesar foto (100% = utuh)');
+  sZ.input.min = '100'; sZ.input.max = '300'; sZ.input.step = '5';
+  var zLabel = el('span', 'float:right;font-weight:700;color:' + SAND, '100%');
+  sZ.wrap.insertBefore(zLabel, sZ.wrap.firstChild);
   var sY = slider('Atas \u2194 Bawah');
   var sX = slider('Kiri \u2194 Kanan');
   var preset = el('div', 'display:flex;gap:8px;margin-top:12px;flex-wrap:wrap');
   var tombolPanel = el('div', 'display:flex;gap:8px;margin-top:16px;justify-content:flex-end');
   var pSimpan = el('button', 'background:' + SAND + ';color:#fff;border:0;border-radius:3px;padding:10px 16px;min-height:40px', 'Simpan posisi');
   var pBatal = el('button', 'background:#fff;color:' + DEEP + ';border:1px solid #CBD5E1;border-radius:3px;padding:9px 14px;min-height:40px', 'Batal');
-  var pReset = el('button', 'background:#fff;color:' + DEEP + ';border:1px solid #CBD5E1;border-radius:3px;padding:9px 14px;min-height:40px;margin-right:auto', 'Posisi asli');
+  var pReset = el('button', 'background:#fff;color:' + DEEP + ';border:1px solid #CBD5E1;border-radius:3px;padding:9px 14px;min-height:40px;margin-right:auto', 'Posisi & ukuran asli');
 
   panelPos.appendChild(el('strong', 'display:block;font-size:16px', 'Atur posisi foto'));
   panelPos.appendChild(el('span', 'display:block;color:#56697E;font-size:13px;margin-top:2px',
-    'Geser slider, pilih cepat di bawah, atau seret foto langsung.'));
-  panelPos.appendChild(sY.wrap); panelPos.appendChild(sX.wrap);
+    'Perbesar untuk menampilkan sebagian foto saja, lalu geser posisinya. Bisa juga seret foto langsung.'));
+  panelPos.appendChild(sZ.wrap); panelPos.appendChild(sY.wrap); panelPos.appendChild(sX.wrap);
   [['Atas', 15], ['Tengah', 50], ['Bawah', 85]].forEach(function (p) {
     var b = el('button', 'background:#F3F7FA;color:' + DEEP + ';border:1px solid #DEE6EE;border-radius:3px;padding:8px 14px;min-height:36px', p[0]);
     b.type = 'button';
@@ -357,24 +361,32 @@
   [pReset, pBatal, pSimpan].forEach(function (b) { b.type = 'button'; tombolPanel.appendChild(b); });
   panelPos.appendChild(tombolPanel);
 
-  function setPos(x, y) {
+  function setPos(x, y, z) {
     posX = Math.max(0, Math.min(100, Math.round(x)));
     posY = Math.max(0, Math.min(100, Math.round(y)));
-    sX.input.value = posX; sY.input.value = posY;
-    if (posImg) posImg.style.objectPosition = posX + '% ' + posY + '%';
+    if (z != null) posZ = Math.max(1, Math.min(3, Math.round(z * 20) / 20));
+    sX.input.value = posX; sY.input.value = posY; sZ.input.value = Math.round(posZ * 100);
+    zLabel.textContent = Math.round(posZ * 100) + '%';
+    if (posImg) {
+      posImg.style.objectPosition = posX + '% ' + posY + '%';
+      S.aturZoom(posImg, posX, posY, posZ);
+    }
   }
   sX.input.addEventListener('input', function () { setPos(+sX.input.value, posY); });
   sY.input.addEventListener('input', function () { setPos(posX, +sY.input.value); });
+  sZ.input.addEventListener('input', function () { setPos(posX, posY, +sZ.input.value / 100); });
 
   function bukaPosisi(img) {
     tutupPalet();
     posImg = img;
     if (!img.hasAttribute('data-orig-pos')) img.setAttribute('data-orig-pos', img.style.objectPosition || '');
     posAwal = img.style.objectPosition || '';
+    var mz = /scale\(([\d.]+)\)/.exec(img.style.transform || '');
+    posAwalZoom = mz ? parseFloat(mz[1]) : 1;
     var cs = g.getComputedStyle(img).objectPosition;
-    setPos(persen(cs, 0), persen(cs, 1));
+    setPos(persen(cs, 0), persen(cs, 1), posAwalZoom);
     panelPos.style.display = 'block';
-    var r = img.getBoundingClientRect();
+    var r = S.kotakFoto(img);
     seret.style.left = (r.left + g.scrollX) + 'px';
     seret.style.top = (r.top + g.scrollY) + 'px';
     seret.style.width = r.width + 'px';
@@ -391,14 +403,18 @@
     posImg = null;
   }
 
-  pBatal.addEventListener('click', function () { if (posImg) posImg.style.objectPosition = posAwal; tutupPosisi(); });
+  pBatal.addEventListener('click', function () {
+    if (posImg) { posImg.style.objectPosition = posAwal; S.aturZoom(posImg, persen(posAwal, 0), persen(posAwal, 1), posAwalZoom); }
+    tutupPosisi();
+  });
   pReset.addEventListener('click', function () {
     if (!posImg) return;
     var idx = S.idx.im.get(posImg);
     var all = S.load(), e = entryFoto(all, posImg);
     if (e.pos) delete e.pos[idx];
     posImg.style.objectPosition = posImg.getAttribute('data-orig-pos') || '';
-    if (simpan(all)) pesan('Posisi foto dikembalikan.');
+    S.aturZoom(posImg, 50, 50, 1);
+    if (simpan(all)) pesan('Posisi dan ukuran foto dikembalikan.');
     tutupPosisi();
   });
   pSimpan.addEventListener('click', function () {
@@ -406,7 +422,7 @@
     var idx = S.idx.im.get(posImg);
     var all = S.load(), e = entryFoto(all, posImg);
     e.pos = e.pos || {};
-    e.pos[idx] = posX + '% ' + posY + '%';
+    e.pos[idx] = posX + '% ' + posY + '%' + (posZ > 1.001 ? ' / ' + posZ : '');
     if (simpan(all)) pesan('Posisi foto tersimpan.');
     tutupPosisi();
   });
@@ -421,7 +437,7 @@
     });
     seret.addEventListener('pointermove', function (ev) {
       if (!tarik || !posImg) return;
-      var r = posImg.getBoundingClientRect();
+      var r = S.kotakFoto(posImg);
       setPos(ax - (ev.clientX - sx) / r.width * 100, ay - (ev.clientY - sy) / r.height * 100);
     });
     function lepas() { tarik = false; seret.style.cursor = 'grab'; }
@@ -623,7 +639,7 @@
     if (!aktif) return;
     var all = S.load(), e = all[S.vkey(PAGE)] || {}, eo = all[PAGE] || {};
     chipFoto.forEach(function (c) {
-      var r = c.img.getBoundingClientRect();
+      var r = S.kotakFoto(c.img);
       var tampak = r.width > 40 && r.height > 30;
       c.chip.style.display = tampak ? 'flex' : 'none';
       c.chip.style.left = (r.left + g.scrollX + 10) + 'px';
@@ -665,6 +681,7 @@
     Array.prototype.forEach.call(salin.querySelectorAll('[data-orig-pos]'), function (x) { x.removeAttribute('data-orig-pos'); });
     Array.prototype.forEach.call(salin.querySelectorAll('[data-orig-bg]'), function (x) { x.removeAttribute('data-orig-bg'); });
     Array.prototype.forEach.call(salin.querySelectorAll('[data-orig-fg]'), function (x) { x.removeAttribute('data-orig-fg'); });
+    Array.prototype.forEach.call(salin.querySelectorAll('[data-orig-zoom]'), function (x) { x.removeAttribute('data-orig-zoom'); });
     Array.prototype.forEach.call(salin.querySelectorAll('[data-ed-top]'), function (x) {
       x.style.top = x.getAttribute('data-ed-top') || ''; x.removeAttribute('data-ed-top');
     });
@@ -675,7 +692,7 @@
     var html = '<!doctype html>\n' + salin.outerHTML;
 
     var nama = PAGE.split('/').pop() + '.html';
-    var folder = PAGE.indexOf('id/') === 0 ? 'id/' : '';
+    var folder = PAGE.indexOf('en/') === 0 ? '' : PAGE.split('/')[0] + '/';
     var lanjut = 'Unggah ke GitHub di folder ' + (folder || 'utama (root)') +
                  ', menggantikan berkas lama. Setelah itu pengunjung ikut melihat perubahannya.';
     if (B) {

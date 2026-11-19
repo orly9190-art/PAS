@@ -173,3 +173,13 @@ table { border-collapse: collapse; }
   header nav, div[style*="sticky"] nav { gap: 18px !important; }
   div[style*="sticky"] nav a { font-size: 14.5px !important; }
 }
+@media (max-width: 1100px) and (min-width: 861px) {
+  header nav, div[style*="sticky"] nav { gap: 12px !important; }
+  div[style*="sticky"] nav a { font-size: 13.5px !important; letter-spacing: 0 !important; }
+}
+
+/* halaman bahasa China: huruf Han memakai fon sistem yang sesuai */
+html[lang="zh-CN"] body, html[lang="zh-CN"] button, html[lang="zh-CN"] input, html[lang="zh-CN"] textarea, html[lang="zh-CN"] select {
+  font-family: Barlow, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif !important;
+}
+html[lang="zh-CN"] p, html[lang="zh-CN"] li { line-height: 1.85; }

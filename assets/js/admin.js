@@ -26,7 +26,8 @@
     { slug: 'media',         name: 'Media',         file: 'media.html' },
     { slug: 'karir',         name: 'Karir',         file: 'karir.html' },
     { slug: 'kontak',        name: 'Kontak',        file: 'kontak.html' },
-    { slug: 'legal',         name: 'Legal',         file: 'legal.html' }
+    { slug: 'legal',         name: 'Legal',         file: 'legal.html' },
+    { slug: 'tautan',        name: 'Tautan',        file: 'tautan.html' }
   ];
   var LANGS = { en: 'Bahasa Inggris', id: 'Bahasa Indonesia' };
   var TAGS = {
@@ -295,7 +296,7 @@
       document.body.appendChild(f);
       var lang = key.split('/')[0], slug = key.split('/')[1];
       if (B) f.srcdoc = B.page(key);
-      else f.src = '../' + (lang === 'id' ? 'id/' : '') + slug + '.html';
+      else f.src = '../' + (lang === 'en' ? '' : lang + '/') + slug + '.html';
     });
   }
 
@@ -303,7 +304,7 @@
     var salin = doc.documentElement.cloneNode(true);
     Array.prototype.forEach.call(salin.querySelectorAll('[data-pas-editor],[data-runtime]'), function (x) { x.remove(); });
     Array.prototype.forEach.call(salin.querySelectorAll('span.pas-ed-t'), function (sp) { sp.parentNode.replaceChild(doc.createTextNode(sp.textContent), sp); });
-    ['data-orig-pos', 'data-orig-bg', 'data-orig-fg', 'data-orig-src'].forEach(function (a) {
+    ['data-orig-pos', 'data-orig-bg', 'data-orig-fg', 'data-orig-src', 'data-orig-zoom'].forEach(function (a) {
       Array.prototype.forEach.call(salin.querySelectorAll('[' + a + ']'), function (x) { x.removeAttribute(a); });
     });
     Array.prototype.forEach.call(salin.querySelectorAll('[data-ed-top]'), function (x) { x.style.top = x.getAttribute('data-ed-top') || ''; x.removeAttribute('data-ed-top'); });
@@ -328,7 +329,7 @@
     var B = window.parent !== window && window.parent.__PASBUNDLE;
     var zip = new JSZip(), stamp = String(Date.now()), fotoDipakai = {}, jumlahFoto = 0;
     var kunci = [];
-    PAGES.forEach(function (p) { kunci.push('en/' + p.slug, 'id/' + p.slug); });
+    PAGES.forEach(function (p) { kunci.push('en/' + p.slug, 'id/' + p.slug, 'zh/' + p.slug); });
     tombol.disabled = true;
     var i = 0;
     function berikut() {
@@ -338,7 +339,7 @@
       muatHalaman(key).then(function (r) {
         var salin = bersihkanSalinan(r.doc);
         if (B) B.restore(salin, key);
-        var awalan = key.indexOf('id/') === 0 ? '../' : '';
+        var awalan = key.indexOf('en/') === 0 ? '' : '../';
         Array.prototype.forEach.call(salin.querySelectorAll('img[src^="data:"]'), function (im) {
           var uri = im.getAttribute('src'), id = sidik(uri), nama = 'edit-' + id + '.' + ekstensiData(uri);
           if (!fotoDipakai[nama]) { zip.file('assets/img/' + nama, dataKeBiner(uri)); fotoDipakai[nama] = 1; jumlahFoto++; }
@@ -346,7 +347,7 @@
           im.removeAttribute('data-bundle-img');
         });
         salin.setAttribute('data-pas-export', stamp);
-        var path = (key.indexOf('id/') === 0 ? 'id/' : '') + key.split('/')[1] + '.html';
+        var path = (key.indexOf('en/') === 0 ? '' : key.split('/')[0] + '/') + key.split('/')[1] + '.html';
         zip.file(path, '<!doctype html>\n' + salin.outerHTML);
         r.frame.remove();
         berikut();
@@ -362,7 +363,7 @@
         'Website PT Prima Armada Samudra - halaman beserta perubahan',
         'Dibuat: ' + new Date().toLocaleString('id-ID'),
         '',
-        'Isi: ' + kunci.length + ' halaman (EN + ID) dan ' + jumlahFoto + ' foto yang Anda ganti (assets/img/edit-*).',
+        'Isi: ' + kunci.length + ' halaman (EN + ID + 中文) dan ' + jumlahFoto + ' foto yang Anda ganti (assets/img/edit-*).',
         '',
         'Cara memakai:',
         '1. Ekstrak zip ini.',

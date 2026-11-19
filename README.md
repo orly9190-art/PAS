@@ -251,7 +251,7 @@ website dipublikasikan.
 ## Peta wilayah operasi, sejarah, dan jumlah armada
 
 - **Peta** (halaman Layanan): tiga foto peta, yaitu Peta 1 lokasi kantor, Peta 2 rute Samarinda, Peta 3 rute Banjarmasin.
-  Berkasnya `assets/img/peta-indonesia-en|id.jpg`, `peta-rute-samarinda-en|id.jpg`, `peta-rute-banjarmasin-en|id.jpg` (versi EN dan ID berbeda).
+  Berkasnya `assets/img/peta-indonesia-en|id.jpg`, `peta-rute-samarinda-en|id.jpg`, `peta-rute-bjm-en|id.jpg` (versi EN dan ID berbeda).
   Ganti lewat Mode Edit: klik **Ganti foto** di atas peta, pilih gambar dari laptop. Foto peta tampil utuh (tidak dipotong).
 - **Sejarah** (halaman Tentang Kami): garis waktu 2004, 2009, 2014, 2019, 2024, 2026. Angka `[x]` adalah tempat isian
   jumlah tug dan barge PAS dan LLJ; isi lewat Mode Edit (klik angkanya lalu ketik).
@@ -274,3 +274,11 @@ website yang sudah dihosting; tidak dari berkas yang dibuka langsung di komputer
 
 Tombol **Edit halaman** (kiri bawah) hanya muncul setelah login admin (`admin/index.html`).
 Login berlaku di semua tab browser yang sama selama 12 jam.
+
+
+## Bahasa China (中文) dan halaman Tautan
+
+- Versi bahasa China ada di folder `zh/` (9 halaman). Tombol **ID / EN / 中文** ada di pojok kanan atas semua halaman.
+- Berita dan lowongan dari panel admin punya kolom (中文). Bila dikosongkan, halaman China memakai isi bahasa Inggris.
+- Halaman baru **Tautan / Links / 推荐链接** (`tautan.html`): tabel 5 baris No, Link website, Status. Isi lewat Mode Edit;
+  teks yang diawali `https://` atau `www.` otomatis menjadi tautan yang bisa diklik.

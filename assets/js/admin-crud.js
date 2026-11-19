@@ -3,18 +3,18 @@
   'use strict';
   var A = window.PASAdmin, h = A.h, D = window.PASData;
   var ST = ['Baru', 'Dibaca', 'Selesai'];
-  var SLUGS = [['index', 'Tentang Kami'], ['organisasi', 'Organisasi'], ['layanan', 'Layanan'], ['keberlanjutan', 'Keberlanjutan'], ['media', 'Media'], ['karir', 'Karir'], ['kontak', 'Kontak'], ['legal', 'Legal']];
+  var SLUGS = [['index', 'Tentang Kami'], ['organisasi', 'Organisasi'], ['layanan', 'Layanan'], ['keberlanjutan', 'Keberlanjutan'], ['media', 'Media'], ['karir', 'Karir'], ['kontak', 'Kontak'], ['legal', 'Legal'], ['tautan', 'Tautan']];
   var CFG = {
     pesan: { group: 'Kotak Masuk', title: 'Permintaan Penawaran', sub: 'Masuk dari formulir di halaman Kontak.', cols: ['nama', 'perusahaan', 'muatan', 'status', 'dibuat'],
       fields: [['nama', 'Nama'], ['perusahaan', 'Perusahaan'], ['email', 'Email'], ['hp', 'HP / WhatsApp'], ['muat', 'Pelabuhan muat'], ['bongkar', 'Pelabuhan bongkar'], ['muatan', 'Jenis muatan'], ['volume', 'Volume (MT)'], ['tanggal', 'Tanggal muat'], ['pesan', 'Keterangan', 'area'], ['status', 'Status', 'sel', ST]] },
     lamaran: { group: 'Kotak Masuk', title: 'Lamaran Kerja', sub: 'Masuk dari tombol Lamar di halaman Karir.', cols: ['nama', 'posisi', 'email', 'status', 'dibuat'],
       fields: [['nama', 'Nama'], ['posisi', 'Posisi'], ['email', 'Email'], ['hp', 'HP / WhatsApp'], ['tautan_cv', 'Tautan CV'], ['pesan', 'Pesan', 'area'], ['status', 'Status', 'sel', ST]] },
     berita: { group: 'Kelola Konten', title: 'Berita (Media)', sub: 'Kartu berita di halaman Media.', cols: ['gambar', 'judul_id', 'kategori', 'tanggal'],
-      fields: [['kategori', 'Kategori (ID)'], ['kategori_en', 'Kategori (EN)'], ['tanggal', 'Tanggal (ID)'], ['tanggal_en', 'Tanggal (EN)'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area']] },
+      fields: [['kategori', 'Kategori (ID)'], ['kategori_en', 'Kategori (EN)'], ['tanggal', 'Tanggal (ID)'], ['tanggal_en', 'Tanggal (EN)'], ['kategori_zh', 'Kategori (中文)'], ['tanggal_zh', 'Tanggal (中文)'], ['gambar', 'Gambar', 'img'], ['judul_id', 'Judul (ID)'], ['judul_en', 'Judul (EN)'], ['judul_zh', 'Judul (中文)'], ['isi_id', 'Ringkasan (ID)', 'area'], ['isi_en', 'Ringkasan (EN)', 'area'], ['isi_zh', 'Ringkasan (中文, kosongkan untuk pakai EN)', 'area']] },
     lowongan: { group: 'Kelola Konten', title: 'Lowongan (Karir)', sub: 'Daftar lowongan di halaman Karir. Yang berstatus Nonaktif tidak tampil.', cols: ['judul_id', 'penempatan', 'jenis', 'tutup', 'status'],
-      fields: [['judul_id', 'Posisi (ID)'], ['judul_en', 'Posisi (EN)'], ['penempatan', 'Penempatan'], ['jenis', 'Jenis kerja'], ['tutup', 'Tanggal tutup'], ['status', 'Status', 'sel', ['Aktif', 'Nonaktif']]] },
+      fields: [['judul_id', 'Posisi (ID)'], ['judul_en', 'Posisi (EN)'], ['judul_zh', 'Posisi (中文)'], ['penempatan', 'Penempatan'], ['jenis', 'Jenis kerja'], ['tutup', 'Tanggal tutup'], ['status', 'Status', 'sel', ['Aktif', 'Nonaktif']]] },
     blok: { group: 'Kelola Konten', title: 'Blok Halaman', sub: 'Bagian tambahan (judul, teks, gambar) untuk halaman mana pun; tampil sebelum footer.', cols: ['halaman', 'bahasa', 'judul'],
-      fields: [['halaman', 'Halaman', 'sel', SLUGS.map(function (s) { return s[0]; })], ['bahasa', 'Bahasa', 'sel', ['semua', 'id', 'en']], ['judul', 'Judul'], ['isi', 'Isi (pisahkan paragraf dengan baris kosong)', 'area'], ['gambar', 'Gambar (opsional)', 'img']] }
+      fields: [['halaman', 'Halaman', 'sel', SLUGS.map(function (s) { return s[0]; })], ['bahasa', 'Bahasa', 'sel', ['semua', 'id', 'en', 'zh']], ['judul', 'Judul'], ['isi', 'Isi (pisahkan paragraf dengan baris kosong)', 'area'], ['gambar', 'Gambar (opsional)', 'img']] }
   };
   var LBL = { dibuat: 'Masuk', halaman: 'Halaman', bahasa: 'Bahasa', judul: 'Judul' };
   function lbl(c, k) { var f = c.fields.filter(function (x) { return x[0] === k; })[0]; return f ? f[1] : (LBL[k] || k); }

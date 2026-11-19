@@ -11,14 +11,15 @@
   'use strict';
 
   var CFG = g.PAS_CONFIG = g.PAS_CONFIG || {};
-  var ID = (d.documentElement.getAttribute('lang') || 'en') === 'id';
+  var LG = (d.documentElement.getAttribute('lang') || 'en').slice(0, 2);
+  var ID = LG === 'id', ZH = LG === 'zh';
   var SAND = '#C9872F';
   var DEEP = '#0A2240';
 
   var TEKS = {
-    lewati: ID ? 'Lewati ke isi halaman' : 'Skip to main content',
-    atas: ID ? 'Kembali ke atas halaman' : 'Back to top',
-    wa: ID ? 'Hubungi kami lewat WhatsApp' : 'Contact us on WhatsApp'
+    lewati: ID ? 'Lewati ke isi halaman' : (ZH ? '跳至主要内容' : 'Skip to main content'),
+    atas: ID ? 'Kembali ke atas halaman' : (ZH ? '返回页面顶部' : 'Back to top'),
+    wa: ID ? 'Hubungi kami lewat WhatsApp' : (ZH ? '通过 WhatsApp 联系我们' : 'Contact us on WhatsApp')
   };
 
   function siap(fn) {
@@ -119,13 +120,28 @@
       besar.src = im.currentSrc || im.src; besar.alt = im.alt || '';
       besar.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.45);background:#fff';
       var x = d.createElement('button');
-      x.type = 'button'; x.textContent = '\u00d7'; x.setAttribute('aria-label', ID ? 'Tutup' : 'Close');
+      x.type = 'button'; x.textContent = '\u00d7'; x.setAttribute('aria-label', ID ? 'Tutup' : (ZH ? '关闭' : 'Close'));
       x.style.cssText = 'position:absolute;top:14px;right:16px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:' + DEEP + ';font:700 26px/1 Arial,sans-serif;cursor:pointer';
       lapis.appendChild(besar); lapis.appendChild(x);
       lapis.addEventListener('click', tutup);
       d.body.appendChild(lapis);
       d.addEventListener('keydown', esc);
       x.focus();
+    });
+  });
+
+  /* ---------- 5. sel tabel bertanda data-autolink: alamat web jadi tautan ---------- */
+  siap(function () {
+    Array.prototype.forEach.call(d.querySelectorAll('td[data-autolink]'), function (td) {
+      if (td.querySelector('a')) return;
+      var t = (td.textContent || '').trim();
+      if (!/^(https?:\/\/|www\.)\S+$/i.test(t)) return;
+      var a = d.createElement('a');
+      a.href = /^www\./i.test(t) ? 'https://' + t : t;
+      a.target = '_blank'; a.rel = 'noopener';
+      a.style.cssText = 'color:inherit;text-decoration:underline;text-underline-offset:3px';
+      while (td.firstChild) a.appendChild(td.firstChild); // simpan simpul teks asli agar Mode Edit tetap bekerja
+      td.appendChild(a);
     });
   });
 })(window, document);

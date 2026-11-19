@@ -7,7 +7,7 @@
 const {chromium}=require('playwright');
 const fs=require('fs'), path=require('path');
 const root=process.cwd();
-const slugs=['index','organisasi','layanan','keberlanjutan','media','karir','kontak','legal'];
+const slugs=['index','organisasi','layanan','keberlanjutan','media','karir','kontak','legal','tautan'];
 (async()=>{
   const b=await chromium.launch(); const p=await b.newPage();
   const out={};

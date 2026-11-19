@@ -10,16 +10,16 @@
   var CFG = g.PAS_CONFIG = g.PAS_CONFIG || {};
   if (CFG.submitUrl === undefined) CFG.submitUrl = '';   // alamat layanan formulir (Formspree/Web3Forms/Apps Script)
   if (CFG.waNumber === undefined) CFG.waNumber = '';     // nomor WhatsApp, mis. '628123456789'. Kosong = tombol tidak muncul.
-  var SEED = {"berita": [{"id": "b1", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Januari – Juni 2026", "tanggal_en": "January – June 2026", "gambar": "assets/img/berita-armada-2026-1.jpg", "judul_id": "Sembilan kapal baru bergabung dengan armada", "judul_en": "Nine new vessels join the fleet", "isi_id": "Tiga tug (Seal 1603, Cahaya 1602, Cahaya 1603) dan enam barge (Sea Lion 2701, 2702, 2703 serta Cahaya Prima 2701, 2702, 2703) bergabung dengan armada antara Januari dan Mei 2026.", "isi_en": "Three tugs (Seal 1603, Cahaya 1602, Cahaya 1603) and six barges (Sea Lion 2701, 2702, 2703 and Cahaya Prima 2701, 2702, 2703) joined the fleet between January and May 2026."}, {"id": "b2", "kategori": "Klasifikasi", "kategori_en": "Classification", "tanggal": "[Tanggal]", "tanggal_en": "[Date]", "gambar": "assets/img/kapal-tunda.jpg", "judul_id": "Survei kelas RINA untuk armada", "judul_en": "RINA class survey across the fleet", "isi_id": "[Ringkas survei tahunan RINA: kapal yang diperiksa, jenis survei, dan hasilnya.]", "isi_en": "[Summarise the RINA annual survey: vessels inspected, survey type, and result.]"}, {"id": "b3", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Juli – Desember 2025", "tanggal_en": "July – December 2025", "gambar": "assets/img/berita-armada-2025-2.jpg", "judul_id": "Lima kapal baru bergabung dengan armada", "judul_en": "Five new vessels join the fleet", "isi_id": "Tug WHA 1602 (Agustus), Cahaya 1601 (Oktober), Dolphin 1602 (November), dan WHA 1601 (Desember) bergabung dengan armada, bersama barge Prima 2702 (Desember 2025).", "isi_en": "Tugs WHA 1602 (August), Cahaya 1601 (October), Dolphin 1602 (November), and WHA 1601 (December) joined the fleet, together with barge Prima 2702 (December 2025)."}, {"id": "b4", "kategori": "Klasifikasi", "kategori_en": "Classification", "tanggal": "[Tanggal]", "tanggal_en": "[Date]", "gambar": "assets/img/anjungan.jpg", "judul_id": "Survei antara dan pembaruan kelas RINA", "judul_en": "RINA intermediate survey and class renewal", "isi_id": "[Catat kapal yang disurvei RINA, temuan, dan tindak lanjutnya.]", "isi_en": "[Record the vessels surveyed by RINA, the findings, and the follow-up.]"}, {"id": "b5", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Januari – Juni 2025", "tanggal_en": "January – June 2025", "gambar": "assets/img/berita-armada-2025-1.jpg", "judul_id": "Barge baru Prima 2701 dan tug Dolphin 1601", "judul_en": "New barge Prima 2701 and tug Dolphin 1601", "isi_id": "Barge Prima 2701 (270 ft) bergabung dengan armada pada Maret 2025, disusul tug 26 meter Dolphin 1601 pada Juni 2025.", "isi_en": "Barge Prima 2701 (270 ft) joined the fleet in March 2025, followed by the 26-metre tug Dolphin 1601 in June 2025."}], "lowongan": [{"id": "l1", "judul_id": "[Nama posisi]", "judul_en": "[Position title]", "penempatan": "[Penempatan]", "jenis": "[Jenis kerja]", "tutup": "[tanggal]", "status": "Aktif"}, {"id": "l2", "judul_id": "[Nama posisi]", "judul_en": "[Position title]", "penempatan": "[Penempatan]", "jenis": "[Jenis kerja]", "tutup": "[tanggal]", "status": "Aktif"}]};
+  var SEED = {"berita": [{"id": "b1", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Januari – Juni 2026", "tanggal_en": "January – June 2026", "gambar": "assets/img/berita-armada-2026-1.jpg", "judul_id": "Sembilan kapal baru bergabung dengan armada", "judul_en": "Nine new vessels join the fleet", "isi_id": "Tiga tug (Seal 1603, Cahaya 1602, Cahaya 1603) dan enam barge (Sea Lion 2701, 2702, 2703 serta Cahaya Prima 2701, 2702, 2703) bergabung dengan armada antara Januari dan Mei 2026.", "isi_en": "Three tugs (Seal 1603, Cahaya 1602, Cahaya 1603) and six barges (Sea Lion 2701, 2702, 2703 and Cahaya Prima 2701, 2702, 2703) joined the fleet between January and May 2026.", "kategori_zh": "船队", "tanggal_zh": "2026 年 1 月 – 6 月", "judul_zh": "九艘新船加入船队", "isi_zh": "三艘拖轮（Seal 1603、Cahaya 1602、Cahaya 1603）和六艘驳船（Sea Lion 2701、2702、2703 及 Cahaya Prima 2701、2702、2703）于 2026 年 1 月至 5 月间加入船队。"}, {"id": "b2", "kategori": "Klasifikasi", "kategori_en": "Classification", "tanggal": "[Tanggal]", "tanggal_en": "[Date]", "gambar": "assets/img/kapal-tunda.jpg", "judul_id": "Survei kelas RINA untuk armada", "judul_en": "RINA class survey across the fleet", "isi_id": "[Ringkas survei tahunan RINA: kapal yang diperiksa, jenis survei, dan hasilnya.]", "isi_en": "[Summarise the RINA annual survey: vessels inspected, survey type, and result.]", "kategori_zh": "入级", "tanggal_zh": "[日期]", "judul_zh": "全船队 RINA 船级检验", "isi_zh": "[概述 RINA 年度检验：受检船舶、检验类型及结果。]"}, {"id": "b3", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Juli – Desember 2025", "tanggal_en": "July – December 2025", "gambar": "assets/img/berita-armada-2025-2.jpg", "judul_id": "Lima kapal baru bergabung dengan armada", "judul_en": "Five new vessels join the fleet", "isi_id": "Tug WHA 1602 (Agustus), Cahaya 1601 (Oktober), Dolphin 1602 (November), dan WHA 1601 (Desember) bergabung dengan armada, bersama barge Prima 2702 (Desember 2025).", "isi_en": "Tugs WHA 1602 (August), Cahaya 1601 (October), Dolphin 1602 (November), and WHA 1601 (December) joined the fleet, together with barge Prima 2702 (December 2025).", "kategori_zh": "船队", "tanggal_zh": "2025 年 7 月 – 12 月", "judul_zh": "五艘新船加入船队", "isi_zh": "拖轮 WHA 1602（8 月）、Cahaya 1601（10 月）、Dolphin 1602（11 月）和 WHA 1601（12 月）加入船队，驳船 Prima 2702 亦于 2025 年 12 月加入。"}, {"id": "b4", "kategori": "Klasifikasi", "kategori_en": "Classification", "tanggal": "[Tanggal]", "tanggal_en": "[Date]", "gambar": "assets/img/anjungan.jpg", "judul_id": "Survei antara dan pembaruan kelas RINA", "judul_en": "RINA intermediate survey and class renewal", "isi_id": "[Catat kapal yang disurvei RINA, temuan, dan tindak lanjutnya.]", "isi_en": "[Record the vessels surveyed by RINA, the findings, and the follow-up.]", "kategori_zh": "入级", "tanggal_zh": "[日期]", "judul_zh": "RINA 中间检验与船级换证", "isi_zh": "[记录 RINA 检验的船舶、发现的问题及后续跟进。]"}, {"id": "b5", "kategori": "Armada", "kategori_en": "Fleet", "tanggal": "Januari – Juni 2025", "tanggal_en": "January – June 2025", "gambar": "assets/img/berita-armada-2025-1.jpg", "judul_id": "Barge baru Prima 2701 dan tug Dolphin 1601", "judul_en": "New barge Prima 2701 and tug Dolphin 1601", "isi_id": "Barge Prima 2701 (270 ft) bergabung dengan armada pada Maret 2025, disusul tug 26 meter Dolphin 1601 pada Juni 2025.", "isi_en": "Barge Prima 2701 (270 ft) joined the fleet in March 2025, followed by the 26-metre tug Dolphin 1601 in June 2025.", "kategori_zh": "船队", "tanggal_zh": "2025 年 1 月 – 6 月", "judul_zh": "新驳船 Prima 2701 与拖轮 Dolphin 1601", "isi_zh": "驳船 Prima 2701（270 英尺）于 2025 年 3 月加入船队，26 米拖轮 Dolphin 1601 随后于 2025 年 6 月加入。"}], "lowongan": [{"id": "l1", "judul_id": "[Nama posisi]", "judul_en": "[Position title]", "penempatan": "[Penempatan]", "jenis": "[Jenis kerja]", "tutup": "[tanggal]", "status": "Aktif", "judul_zh": "[职位名称]"}, {"id": "l2", "judul_id": "[Nama posisi]", "judul_en": "[Position title]", "penempatan": "[Penempatan]", "jenis": "[Jenis kerja]", "tutup": "[tanggal]", "status": "Aktif", "judul_zh": "[职位名称]"}]};
   var st = document.querySelector('script[data-page]');
   var PAGE = st ? st.getAttribute('data-page') : '';          // mis. "id/media"
   var LANG = PAGE.split('/')[0], SLUG = PAGE.split('/')[1];
-  var ROOT = LANG === 'id' ? '../' : '';
+  var ROOT = LANG === 'en' ? '' : '../';
 
   function load() { try { return JSON.parse(g.localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function put(d) { g.localStorage.setItem(KEY, JSON.stringify(d)); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-  (function () { try { var d = load(); if (d.berita && d.berita.length === 6 && d.berita.some(function (x) { return x.judul_en === '[Company news headline]'; })) { delete d.berita; put(d); } } catch (e) {} })();
+  (function () { try { var d = load(); if (d.berita && d.berita.length === 6 && d.berita.some(function (x) { return x.judul_en === '[Company news headline]'; })) { delete d.berita; put(d); } else if (d.berita && d.berita.length === 5 && !d.berita.some(function (x) { return x.judul_zh; }) && JSON.stringify(d.berita.map(function (x) { return [x.id, x.judul_en, x.isi_en, x.judul_id]; })) === JSON.stringify(SEED.berita.map(function (x) { return [x.id, x.judul_en, x.isi_en, x.judul_id]; }))) { delete d.berita; put(d); } } catch (e) {} })();
   function list(c) { var d = load(); return d[c] !== undefined ? d[c] : JSON.parse(JSON.stringify(SEED[c] || [])); }
   function write(c, l) { var d = load(); d[c] = l; put(d); }
   var D = g.PASData = {
@@ -36,7 +36,8 @@
   };
 
   function img(s) { return !s || /^(data:|https?:|\/)/.test(s) ? s : ROOT + s; }
-  function pick(it, f) { return it[f + '_' + LANG] || it[f + '_id'] || it[f + '_en'] || ''; }
+  // zh memakai isi bahasa Inggris bila terjemahan China belum diisi
+  function pick(it, f) { return it[f + '_' + LANG] || (LANG === 'id' ? (it[f + '_id'] || it[f + '_en']) : (it[f + '_en'] || it[f + '_id'])) || ''; }
   function el(t, css, txt) { var e = document.createElement(t); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
 
   /* ---- halaman Media: kartu berita ---- */
@@ -48,7 +49,7 @@
     items.forEach(function (it) {
       var a = tpl.cloneNode(true), im = a.querySelector('img'), sp = a.querySelectorAll('span');
       if (im) { im.setAttribute('src', img(it.gambar)); im.setAttribute('alt', ''); }
-      var en = LANG === 'en'; if (sp[0]) sp[0].textContent = (en && it.kategori_en) || it.kategori || ''; if (sp[1]) sp[1].textContent = (en && it.tanggal_en) || it.tanggal || '';
+      var en = LANG !== 'id'; if (sp[0]) sp[0].textContent = it['kategori_' + LANG] || (en && it.kategori_en) || it.kategori || ''; if (sp[1]) sp[1].textContent = it['tanggal_' + LANG] || (en && it.tanggal_en) || it.tanggal || '';
       a.querySelector('h3').textContent = pick(it, 'judul'); a.querySelector('p').textContent = pick(it, 'isi');
       box.appendChild(a);
     });
@@ -61,7 +62,7 @@
     if (!link) return;
     var row = link.parentNode, box = row.parentNode, tpl = row.cloneNode(true);
     box.querySelectorAll(':scope > *').forEach(function (r) { r.remove(); });
-    var en = LANG === 'en';
+    var en = LANG !== 'id';
     var items = list('lowongan').filter(function (x) { return x.status !== 'Nonaktif'; });
     if (!items.length) box.appendChild(el('p', 'color:#56697E', en ? 'No open positions at the moment.' : 'Belum ada lowongan saat ini.'));
     items.forEach(function (it) {
@@ -73,7 +74,7 @@
     });
   }
   function lamarModal(posisi) {
-    var en = LANG === 'en', ov = el('div', 'position:fixed;inset:0;background:rgba(10,34,64,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px');
+    var en = LANG !== 'id', ov = el('div', 'position:fixed;inset:0;background:rgba(10,34,64,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px');
     var box = el('div', 'background:#fff;max-width:480px;width:100%;max-height:92vh;overflow:auto;padding:26px;border-radius:4px');
     box.appendChild(el('h3', 'margin:0 0 4px;color:#0A2240;font-size:22px', en ? 'Apply' : 'Kirim lamaran'));
     box.appendChild(el('p', 'margin:0 0 16px;color:#56697E', posisi));
@@ -100,7 +101,7 @@
   function wireKontak() {
     var nm = document.getElementById('f-nama'); if (!nm) return;
     var map = { nama: 'f-nama', perusahaan: 'f-pt', email: 'f-email', hp: 'f-hp', muat: 'f-asal', bongkar: 'f-tujuan', muatan: 'f-muatan', volume: 'f-volume', tanggal: 'f-tgl', pesan: 'f-pesan' };
-    var btn = nm.closest('section').querySelector('button'), en = LANG === 'en';
+    var btn = nm.closest('section').querySelector('button'), en = LANG !== 'id';
     var msg = el('p', 'margin:12px 0 0;font-weight:600'); btn.parentNode.appendChild(msg);
     btn.addEventListener('click', function () {
       var d = {}; Object.keys(map).forEach(function (k) { d[k] = document.getElementById(map[k]).value.trim(); });
